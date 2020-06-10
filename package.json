@@ -1,0 +1,26 @@
+{
+  "name": "itracking",
+  "version": "1.0.0",
+  "description": "System for orgainizing all of the parts and expenses of fixing iPhones.",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "sqlite": "^4.0.10",
+    "sqlite3": "^4.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saffolder/iTracking.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saffolder/iTracking/issues"
+  },
+  "homepage": "https://github.com/saffolder/iTracking#readme"
+}
