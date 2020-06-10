@@ -1,0 +1,38 @@
+/*
+  Developer: Samuel Affolder
+  Date: 06/10/2020
+
+  Handles the look and feel of the webpage on index.html.  Pretty basic and simple because
+  it is really only meant for my machine.
+*/
+header {
+  background-image: url("images/header/header.png");
+  box-shadow: 0 5px 5px lightgray;
+  height: 182px;
+  width: 100%;
+  position: fixed;
+}
+
+header > div {
+  bottom: 0px;
+  color: lightgray;
+  font-size: 36pt;
+  position: absolute;
+  left: 10%;
+}
+
+#income {
+  font-weight: bold;
+  right: 25%;
+}
+
+#add-phone {
+  background-color: transparent;
+  border: gold;
+  bottom: 5px;
+  color: black;
+  font-size: 18pt;
+  right: 10%;
+  padding: 3px;
+  position: absolute;
+}
