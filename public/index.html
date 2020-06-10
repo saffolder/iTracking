@@ -21,8 +21,48 @@
 
 <body>
   <header>
-    <div>iTracker</div><div id="income">$00.00</div><button id="add-phone">Add Phone</button>
+    <div id="title">iTracker</div><div id="income">$</div><button id="add-phone">Add Phone</button>
   </header>
+  <main>
+    <!-- Error View -->
+    <h3 id="err-text" class="hidden">
+      Something went wrong on the server.
+    </h3>
+
+    <section id="phones-data">
+      <!-- Phone List View -->
+      <section id="all-phones">
+        <!-- MAKE A DROP DOWN FOR SORTING -->
+      </section>
+
+      <!-- Single Phone View -->
+      <section id="single-phone">
+
+        <div id="status">
+          <img id="status-img" src="images/status/status0.png" alt="Phone repair status">
+          <span id="status-text">Needs fixed</span>
+        </div>
+
+        <div id="phone-layout">
+          <img id="phone-img" src="images/phones/iPhone60.jpeg" alt="phone image">
+          <article id="phone-info">
+            <h1 id="model">iPhone 6 silver</h1>
+            <h2 id="date-aquired">2020-06-09</h2>
+            <h2 id="issue-description">Needs a new battery.</h2>
+            <h2>Parts:</h2>
+            <ul id="parts-list">
+              <li>Battery</li>
+            </ul>
+            <h2>Parts total: <span id="parts-total">$15.00</span></h2>
+            <h2>Phone cost: <span id="phone-cost">$32.00</span></h2>
+            <h2>Sold for: <span id="sold-price">$87.00</span></h2>
+            <br>
+            <h2>NET: <span id="net-price">$40.00</span></h2>
+          </article>
+        </div>
+      </section>
+    </section>
+  </main>
 </body>
 
 </html>

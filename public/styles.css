@@ -5,6 +5,14 @@
   Handles the look and feel of the webpage on index.html.  Pretty basic and simple because
   it is really only meant for my machine.
 */
+body {
+  margin: 0px;
+}
+
+body > main {
+  padding-top: 182px;
+}
+
 header {
   background-image: url("images/header/header.png");
   box-shadow: 0 5px 5px lightgray;
@@ -15,24 +23,67 @@ header {
 
 header > div {
   bottom: 0px;
-  color: lightgray;
   font-size: 36pt;
   position: absolute;
-  left: 10%;
+}
+
+#title {
+  left: 15%;
+}
+
+#title, button {
+  color: rgb(255, 217, 0);
+  text-shadow: 2px 0 2px white;
 }
 
 #income {
   font-weight: bold;
-  right: 25%;
+  right: 30%;
+  color: green;
+}
+
+button {
+  background-color: black;
+  border: gold;
+  cursor: pointer;
 }
 
 #add-phone {
-  background-color: transparent;
-  border: gold;
-  bottom: 5px;
-  color: black;
+  bottom: 12px;
   font-size: 18pt;
-  right: 10%;
+  right: 8%;
   padding: 3px;
   position: absolute;
+}
+
+h1 {
+  font-size: 40pt;
+}
+
+#phone-layout, #all-phones {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#phone-layout, #single-phone, #all-phones {
+  display: flex;
+}
+
+#single-phone {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+#status-img {
+  width: 30px;
+  height: 30px;
+  align-self: flex-start;
+}
+
+.hidden {
+  display: none;
 }
