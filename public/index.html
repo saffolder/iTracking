@@ -16,12 +16,15 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="styles.css">
   <title>iTracking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow&display=swap" rel="stylesheet">
   <script src="index.js"></script>
 </head>
 
 <body>
   <header>
     <div id="title">iTracker</div><div id="income">$</div><button id="add-phone">Add Phone</button>
+    <button id="home-btn">Home</button>
   </header>
   <main>
     <!-- Error View -->
@@ -32,11 +35,23 @@
     <section id="phones-data">
       <!-- Phone List View -->
       <section id="all-phones">
-        <!-- MAKE A DROP DOWN FOR SORTING -->
+        <!-- MAKE A DROP DOWN FOR SORTING and a button to make a new query using this choice -->
+        <h2>Filter By:
+        <select id="order-by">
+          <option value="0" selected>Date (Newest -> Oldest)</option>
+          <option value="1">Date (Oldest -> Newest)</option>
+          <option value="2">Model (Newest -> Oldest)</option>
+          <option value="3">Model (Oldest -> Newest)</option>
+          <option value="4">Status (Needs fixed -> Fixed)</option>
+          <option value="5">Status (Fixed -> Needs fixed)</option>
+          <option value="6">Cost (Low -> High)</option>
+          <option value="7">Cost (High -> Low)</option>
+        </select></h2>
+        <button id="order-btn">Filter</button>
       </section>
 
       <!-- Single Phone View -->
-      <section id="single-phone">
+      <section id="single-phone" class="hidden">
 
         <div id="status">
           <img id="status-img" src="images/status/status0.png" alt="Phone repair status">
@@ -45,7 +60,7 @@
 
         <div id="phone-layout">
           <img id="phone-img" src="images/phones/iPhone60.jpeg" alt="phone image">
-          <article id="phone-info">
+          <section id="phone-info">
             <h1 id="model">iPhone 6 silver</h1>
             <h2 id="date-aquired">2020-06-09</h2>
             <h2 id="issue-description">Needs a new battery.</h2>
@@ -58,7 +73,7 @@
             <h2>Sold for: <span id="sold-price">$87.00</span></h2>
             <br>
             <h2>NET: <span id="net-price">$40.00</span></h2>
-          </article>
+          </section>
         </div>
       </section>
     </section>

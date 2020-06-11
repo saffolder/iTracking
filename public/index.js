@@ -8,20 +8,83 @@
 "use strict";
 (function() {
 
+  const IMG_PATH_PHONES = "images/phones/iPhone";
   window.addEventListener("load", init);
 
   /**
    * Initializes the webpage as soon as the DOM has loaded in.
    */
   function init() {
-    // TODO: implement everything
+    setHomepage();
+    id("order-btn").addEventListener("click", setHomepage);
+  }
+
+  /**
+   * Makes a fetch request for the information of all the phones from the database
+   */
+  function setHomepage() {
+    id("err-text").classList.add("hidden");
+    id("single-phone").classList.add("hidden");
+    let order = id("order-by").value;
+    fetch("/allPhones?order=" + order)
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(displayPhones)
+      .catch(handleError);
+  }
+
+  /**
+   * Populates the homepage with the data in a neat format
+   * @param {json} phoneData - Basic information on all of the phones in the database
+   */
+  function displayPhones(phoneData) {
+    let display = id("all-phones");
+    // make sure to track the NET total and display when done
+    for (let i = 0; i < phoneData.length; i++) {
+      let phone = gen("div");
+      phone.classList.add("phone-card");
+      phone.attr = phoneData[i].phone_id;
+
+      let img = gen("img");
+      img.src = IMG_PATH_PHONES + phoneData[i].model_id + ".jpeg";
+      img.classList.add("phone-img");
+
+      let description = gen("p");
+      description.classList.add("description");
+
+      phone.appendChild(img);
+      phone.appendChild(description);
+      phone.addEventListener("click", getPhoneData);
+      display.appendChild(phone);
+    }
+  }
+
+  /**
+   * Makes a fetch request to get detailed information on the selected phone
+   */
+  function getPhoneData() {
+    let phoneBody = new FormData();
+    phoneBody.append("phone_id", this.attr);
+    fetch("/phoneInfo", {method: "POST", body: phoneBody})
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(singlePhone)
+      .catch(handleError);
+  }
+
+  /**
+   * Changes view from all phones to the phone clicked
+   */
+  function singlePhone() {
+    id("all-phones").classList.add("hidden");
+
   }
 
   /**
    * Lets the user know that an error occured on the server.
    */
   function handleError() {
-   // TODO: implement error handling function
+    id("err-text").classList.remove("hidden");
   }
 
   /**

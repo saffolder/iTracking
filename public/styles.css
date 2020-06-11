@@ -38,8 +38,8 @@ header > div {
 
 #income {
   font-weight: bold;
-  right: 30%;
   color: green;
+  right: 34%;
 }
 
 button {
@@ -48,16 +48,29 @@ button {
   cursor: pointer;
 }
 
-#add-phone {
+#add-phone, #home-btn {
   bottom: 12px;
   font-size: 18pt;
-  right: 8%;
   padding: 3px;
   position: absolute;
 }
 
+#add-phone {
+  right: 12%;
+}
+
+#home-btn {
+  right: 4%;
+}
+
 h1 {
   font-size: 40pt;
+  font-family: 'Questrial', sans-serif;
+}
+
+#model {
+  margin-top: 0;
+  margin-bottom: 30px;
 }
 
 #phone-layout, #all-phones {
@@ -81,9 +94,53 @@ h1 {
 #status-img {
   width: 30px;
   height: 30px;
-  align-self: flex-start;
 }
 
-.hidden {
+#status {
+  width: 60%;
+}
+
+#status-text {
+  padding-left: 25px;
+  font-size: 22pt;
+}
+
+#phone-img {
+  width: 600px;
+  height: 450px;
+}
+
+#phone-info {
+  font-family: 'Barlow', sans-serif;
+}
+
+.phone-card {
+  border-radius: 5px;
+  box-shadow: 0 0 15px gray;
+  margin: 20px;
+  padding: 5px 5px 0px 5px;
+  width: 330px;
+  height: 400px;
+  text-align: center;
+}
+
+.phone-img {
+  margin: 5px;
+}
+
+#order-btn, #order-by {
+  align-self: center;
+  margin-left: 25px;
+}
+
+#order-btn {
+  font-size: 20pt;
+}
+
+#order-by {
+  height: 35px;
+}
+
+.hidden, #all-phones.hidden, #single-phone.hidden {
   display: none;
 }

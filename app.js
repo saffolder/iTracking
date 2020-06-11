@@ -13,10 +13,53 @@ const sqlite = require("sqlite");
 const LOCAL_HOST = 8000;
 
 const app = express();
-app.use(express.static("public", {index: "bestreads.html"}));
+app.use(express.static("public"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
+
+app.post("/phoneInfo", function(req, res) {
+  let phoneId = req.body.phone_id;
+  let phoneInfo = getPhoneInfo(phoneId);
+  // send back json
+});
+
+/**
+ * Returns json information on all of the phones from the database
+ */
+app.get("/allPhones", async function(req, res) {
+  // figure out a good format, put everything inside of a helper async function
+  let content = await getAllPhones(orderQuery(req.query.order));
+  res.json(content);
+});
+
+/**
+ * Asks the database for infomation and returns json
+ * @param {string} order - An sql query fragment of how to order the phone data
+ * @return {json} - Information on all of the phones
+ */
+async function getAllPhones(order) {
+  try {
+    let query = "SELECT * FROM phones ORDER BY " + order;
+    let database = await getDBConnection();
+    let content = await database.all(query);
+    database.close();
+    return content;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Helper method to choose which order to filter by
+ * @param {int} order - Which position of the query array to choose from
+ * @return {string} - A part of an sql query
+ */
+function orderQuery(order) {
+  let orders = ["date_aquired DESC;", "date_aquired;", "model_id DESC;", "model_id;", "status;",
+                  "status DESC;", "phone_cost;", "phone_cost DESC;"];
+  return orders[order];
+}
 
 /**
  * Establishes a database connection to the wpl database and returns the database object.
