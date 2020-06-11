@@ -6,9 +6,11 @@
  * retrieve information about the iPhones that I have been repairing.
  */
 "use strict";
+
 (function() {
 
   const IMG_PATH_PHONES = "images/phones/iPhone";
+  const IMG_PATH_STATUS = "images/status/status";
   window.addEventListener("load", init);
 
   /**
@@ -25,6 +27,7 @@
   function setHomepage() {
     id("err-text").classList.add("hidden");
     id("single-phone").classList.add("hidden");
+    clearHomepage();
     let order = id("order-by").value;
     fetch("/allPhones?order=" + order)
       .then(checkStatus)
@@ -38,25 +41,147 @@
    * @param {json} phoneData - Basic information on all of the phones in the database
    */
   function displayPhones(phoneData) {
-    let display = id("all-phones");
-    // make sure to track the NET total and display when done
+    let display = id("phones");
+    let netLoss = 0.0;
+    let netGain = 0.0;
+    let partsList = [];
     for (let i = 0; i < phoneData.length; i++) {
+      addParts(partsList, phoneData[i].parts_purchased);
       let phone = gen("div");
-      phone.classList.add("phone-card");
-      phone.attr = phoneData[i].phone_id;
-
+      setPhone(phone, phoneData[i].phone_id);
+      let status = gen("img");
+      setStatus(status, phoneData[i].status);
       let img = gen("img");
-      img.src = IMG_PATH_PHONES + phoneData[i].model_id + ".jpeg";
-      img.classList.add("phone-img");
-
-      let description = gen("p");
-      description.classList.add("description");
-
-      phone.appendChild(img);
-      phone.appendChild(description);
+      setImage(img, phoneData[i].model_id);
+      let model = gen("p");
+      setModel(model, phoneData[i].model);
+      let cost = gen("span");
+      setCost(cost, phoneData[i].phone_cost);
+      netLoss += phoneData[i].phone_cost;
+      let issues = gen("p");
+      setIssues(issues, phoneData[i].issues);
+      if (phoneData[i].sold) {
+        netGain += phoneData[i].sold;
+      }
+      appendChildren(phone, status, img, model, cost, issues);
       phone.addEventListener("click", getPhoneData);
       display.appendChild(phone);
     }
+    let parts = partsCost(partsList);
+    updateCost(netGain, netLoss, parts);
+  }
+
+  /**
+   * Makes a call to the api to get the cost of all the parts.
+   * @param {int[]} partsList - array with the value being the id of the part
+   * @return {double} - The total cost of the parts
+   */
+  function partsCost(partsList) {
+    let parts = new FormData();
+    parts.append("parts", partsList);
+    let cost = 0.0;
+    fetch("/partsCost", {method: "POST", body: parts})
+      .then(checkStatus)
+      .then(value => value.text())
+      .then((price) => {
+        cost = parseFloat(price).toFixed(2);
+      })
+      .catch(handleError);
+    return cost;
+  }
+
+  /**
+   * Updates the income with how much money I am in the positive or negative
+   * @param {double} netGain - How much money made from selling
+   * @param {double} netLoss - The cost of phones
+   * @param {int} parts - The cost of parts
+   */
+  function updateCost(netGain, netLoss, parts) {
+    let income = id("income");
+    let netPrice = netGain - (netLoss + parts);
+    if (netPrice >= 0) {
+      income.textContent = "$" + netPrice.toFixed(2);
+      income.remove("debt");
+      income.classList.add("gain");
+    } else {
+      income.textContent = "$" + Math.abs(netPrice.toFixed(2));
+      income.classList.remove("gain");
+      income.classList.add("debt");
+    }
+  }
+
+  /**
+   * Adds the parts purchased for this phone to the total parts list array
+   * @param {int[]} partsList - Int array of the parts ids
+   * @param {string} partsPurchased - String representation of parts list of given phone
+   */
+  function addParts(partsList, partsPurchased) {
+    let parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i] !== "") {
+        partsList.push(parts[i]);
+      }
+    }
+  }
+
+  /**
+   *
+   * @param {p} issuesEl - Paragraph element
+   * @param {string} issues - The issue that the phone has
+   */
+  function setIssues(issuesEl, issues) {
+    issuesEl.textContent = issues;
+    issuesEl.classList.add("issues");
+  }
+
+  /**
+   * Helper method, sets the class and updates the cost of the phone
+   * @param {span} costEl - Span element containing cost value
+   * @param {int} cost - The cost of the phone
+   */
+  function setCost(costEl, cost) {
+    costEl.textContent = "$" + cost.toFixed(2);
+    costEl.classList.add("cost");
+  }
+
+  /**
+   * Helper method, sets the class and text to the iPhones model
+   * @param {p} modelEl - Paragraph element
+   * @param {string} model - The name of the iPhone
+   */
+  function setModel(modelEl, model) {
+    modelEl.textContent = model;
+    modelEl.classList.add("model-name");
+  }
+
+  /**
+   * Helper method, sets class and src of iPhone img
+   * @param {img} phoneImg - The image of iPhone
+   * @param {int} modelId - The model id of the iPhone
+   */
+  function setImage(phoneImg, modelId) {
+    phoneImg.src = IMG_PATH_PHONES + modelId + ".jpeg";
+    phoneImg.classList.add("phone-img");
+  }
+
+  /**
+   * Helper method, sets class and attr of phone
+   * @param {div} phone - The phone card
+   * @param {integer} phoneId - The id of the phone
+   */
+  function setPhone(phone, phoneId) {
+    phone.classList.add("phone-card");
+    phone.attr = phoneId;
+  }
+
+  /**
+   * Helper method, sets src of img
+   * @param {img} statusImg - The img element
+   * @param {int} status - The code of the phone status
+   */
+  function setStatus(statusImg, status) {
+    statusImg.src = IMG_PATH_STATUS + status + ".png";
+    statusImg.classList.add("status-img");
   }
 
   /**
@@ -73,6 +198,33 @@
   }
 
   /**
+   *
+   * @param {div} phone - The phone card that holds all the information
+   * @param {img} status - Small img indicating the status of the phone
+   * @param {img} img - The picture of the iPhone
+   * @param {p} model - Text with the iPhone model
+   * @param {span} cost - Text of how much the phone cost
+   * @param {p} issues - Text describing the issues of the phone.
+   */
+  function appendChildren(phone, status, img, model, cost, issues) {
+    model.appendChild(cost);
+    phone.appendChild(status);
+    phone.appendChild(img);
+    phone.appendChild(model);
+    phone.appendChild(issues);
+  }
+
+  /**
+   * Makes sure that when a new search begins that there isn't any old query results
+   */
+  function clearHomepage() {
+    let phones = qsa("div.phone-card");
+    for (let i = 0; i < phones.length; i++) {
+      phones[i].remove();
+    }
+  }
+
+  /**
    * Changes view from all phones to the phone clicked
    */
   function singlePhone() {
@@ -82,9 +234,11 @@
 
   /**
    * Lets the user know that an error occured on the server.
+   * @param {string} error - The error that will be displayed.
    */
-  function handleError() {
+  function handleError(error) {
     id("err-text").classList.remove("hidden");
+    id("err-text").textContent = error;
   }
 
   /**
