@@ -19,6 +19,36 @@ app.use(express.json());
 app.use(multer().none());
 
 /**
+ * Endpoint that returns all of the parts and their id's for a given phone model
+ */
+app.get("/allParts", async function(req, res) {
+  try {
+    let content = await getModelParts(req.query.model);
+    res.json(content);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Gets the parts and part id's of the given phone model from the database
+ * @param {string} model - The model of the phone
+ */
+async function getModelParts(model) {
+  try {
+    let query = "SELECT part_id, part_name FROM parts WHERE model_id =?";
+    let database = await getDBConnection();
+    let content = await database.all(query, [model]);
+    database.close();
+    return content;
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+/**
  * Endpoint that returns names of parts based on their part id
  */
 app.post("/phoneParts", async function(req, res) {

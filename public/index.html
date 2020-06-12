@@ -56,29 +56,46 @@
 
       <!-- Single Phone View -->
       <section id="single-phone" class="hidden">
-
         <div id="status">
-          <img id="status-img" src="images/status/status0.png" alt="Phone repair status">
-          <span id="status-text">Needs fixed</span>
+          <img id="status-img" src="" alt="Phone repair status">
+          <span id="status-text"></span>
         </div>
-
         <div id="phone-layout">
-          <img id="phone-img" src="images/phones/iPhone60.jpeg" alt="phone image">
+          <img id="phone-img" src="" alt="phone image">
           <section id="phone-info">
-            <h1 id="model">iPhone 6 silver</h1>
-            <h2 id="date-aquired">2020-06-09</h2>
-            <h2 id="issue-description">Needs a new battery.</h2>
+            <h1 id="model"></h1>
+            <h2 id="date-aquired"></h2>
+            <h2 id="issue-description"></h2>
             <h2>Parts:</h2>
-            <ul id="parts-list">
-              <li>Battery</li>
-            </ul>
-            <h2>Phone cost: <span id="phone-cost" class="debt">$32.00</span></h2>
-            <h2>Parts total: <span id="parts-total" class="debt">$15.00</span></h2>
-            <h2>Sold for: <span id="sold-price" class="gain">$87.00</span></h2>
+            <ul id="parts-list"></ul>
+            <h2>Phone cost: <span id="phone-cost" class="debt"></span></h2>
+            <h2>Parts total: <span id="parts-total" class="debt"></span></h2>
+            <h2>Sold for: <span id="sold-price" class="gain"></span></h2>
             <br>
-            <h2>NET: <span id="net-price">$40.00</span></h2>
+            <h2>NET: <span id="net-price"></span></h2>
           </section>
         </div>
+      </section>
+
+      <!-- Update Phone View -->
+      <section id="update-area" class="hidden">
+        <form id="updated-form">
+          <h2>Status:</h2>
+          <select name="status-update" id="status-update" required>
+            <option value="0">Needs fixed</option>
+            <option value="1">Waiting for parts</option>
+            <option value="2">Fixing</option>
+            <option value="3">Fixed</option>
+            <option value="4">Sold</option>
+          </select>
+          <h2>Issue Update</h2>
+          <textarea name="issue-update" id="issue-update" cols="30" rows="5"></textarea>
+          <h2>Additional Parts Purchased</h2>
+          <section id="parts"></section>
+          <h2>Sold Price:</h2>
+          <input id="sell-price" title="Numbers only. Decimal format optional" type="text" pattern="[-+]?([0-9]*\.[0-9]+|[0-9]+)">
+          <button id="submit-btn">Submit</button>
+        </form>
       </section>
     </section>
   </main>

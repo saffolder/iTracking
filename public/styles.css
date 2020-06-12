@@ -13,7 +13,7 @@ body > main {
   padding-top: 182px;
 }
 
-#phones-data, footer {
+#phones-data, footer, #updated-form {
   background-color: lightgray;
 }
 
@@ -39,8 +39,12 @@ header > div {
   text-shadow: 2px 0 2px white;
 }
 
-#title, button {
+#title, button, #updated-form > h2, .part-selector, #all-phones > h2 {
   color: rgb(255, 217, 0);
+}
+
+#updated-form > h2, #all-phones > h2 {
+  font-size: 30pt;
 }
 
 #income {
@@ -48,21 +52,33 @@ header > div {
   right: 34%;
 }
 
-button, .phone-card, #single-phone {
+button, .phone-card, #single-phone, .part-selector, .box {
   background-color: white;
 }
 
 button {
-  border: 2px thick black;
-  border-radius: 2em;
   text-align: center;
-  padding: 0.3em 0.8em;
-  text-shadow: 2px 0 2px black;
-  bottom: 12px;
   font-size: 18pt;
+  border: 4px groove gold;
 }
 
-button:hover {
+button#submit-btn {
+  position: sticky;
+  margin: 22px;
+}
+
+button, #updated-form, #order-by, #status-update {
+  border: 2px thick black;
+  border-radius: 2em;
+  padding: 0.3em 0.8em;
+  bottom: 7px;
+}
+
+button, #updated-form, .part-selector, #all-phones > h2 {
+  text-shadow: 2px 0 2px black;
+}
+
+button:hover, .part-selector:hover {
   background-color: black;
   border: 2px thick gold;
 }
@@ -75,7 +91,7 @@ button:hover {
   position: absolute;
 }
 
-button, .phone-card {
+button, .phone-card, #order-by {
   cursor: pointer;
 }
 
@@ -104,20 +120,20 @@ h1 {
   margin-bottom: 30px;
 }
 
-#phone-layout, #all-phones, #phones {
+#phone-layout, #all-phones, #phones, #parts {
   flex-direction: row;
   flex-wrap: wrap;
 }
 
-#phone-layout, #all-phones {
+#phone-layout, #all-phones, #update-area, #parts {
   align-items: flex-start;
 }
 
-#phone-layout, #single-phone, #all-phones, #phones, .phone-card {
+#phone-layout, #single-phone, #all-phones, #phones, .phone-card, #updated-form, #update-area, #parts {
   display: flex;
 }
 
-#phone-layout, #single-phone, #all-phones, #phones {
+#phone-layout, #single-phone, #all-phones, #phones, #update-area, #updated-form {
   justify-content: center;
 }
 
@@ -125,11 +141,11 @@ h1 {
   margin-top: 15px;
 }
 
-#single-phone, .phone-card {
+#single-phone, .phone-card, #updated-form {
   flex-direction: column;
 }
 
-#single-phone, #phones {
+#single-phone, #phones, #updated-form {
   align-items: center;
 }
 
@@ -152,18 +168,29 @@ h1 {
   height: 450px;
 }
 
-#phone-info, .model-name {
+#phone-info, .model-name, #updated-form {
   font-family: 'Barlow', sans-serif;
+}
+
+#status-update, #sell-price {
+  width: 200px;
+  height: 50px;
 }
 
 .phone-card {
   border-radius: 5px;
   box-shadow: 0 0 15px gray;
-  margin: 20px;
   padding: 5px 5px 0px 5px;
   width: 330px;
   height: 450px;
+}
+
+.phone-card, #parts {
   justify-content: flex-start;
+}
+
+#updated-form, .phone-card {
+  margin: 20px;
 }
 
 .phone-img {
@@ -174,6 +201,7 @@ h1 {
 #order-btn, #order-by {
   align-self: center;
   margin-left: 25px;
+  margin-right: 25px;
 }
 
 #order-btn {
@@ -182,11 +210,15 @@ h1 {
 
 #order-by {
   height: 35px;
+  border: 4px groove gold;
 }
 
 .status-img {
   width: 15px;
   height: 15px;
+}
+
+.status-img, .part-selector {
   margin: 15px;
 }
 
@@ -202,7 +234,7 @@ h1 {
   margin-left: 15px;
 }
 
-#phones, footer {
+#phones, footer, #update-area {
   margin-left: auto;
   margin-right: auto;
 }
@@ -219,6 +251,38 @@ h1 {
   text-decoration: underline gold;
 }
 
+#update-area {
+  width: 90%;
+}
+
+.part-selector {
+  width: 285px;
+  height: 50px;
+  font-size: 15pt;
+  text-align: center;
+}
+
+.box {
+  background-color: lightgray;
+  margin: 9px;
+  float: left;
+  width: 25px;
+  height: 25px;
+  padding: 4px;
+}
+
+.part-selector > p, .box {
+  float: left;
+}
+
+.part-selector > p {
+  margin-top: 11px;
+}
+
+.part-selector.selected > .box {
+  background-color: gold;
+}
+
 footer {
   width: 85%;
   text-align: center;
@@ -227,7 +291,7 @@ footer {
   margin-bottom: 35px;
 }
 
-footer > * {
+footer > *, #updated-form {
   padding: 12px;
 }
 
@@ -239,6 +303,6 @@ footer > p {
   font-size: 15pt;
 }
 
-.hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden {
+.hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden, #update-area.hidden {
   display: none;
 }

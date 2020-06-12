@@ -7,6 +7,8 @@
  */
 "use strict";
 
+const e = require("express");
+
 (function() {
 
   const IMG_PATH_PHONES = "images/phones/iPhone";
@@ -20,6 +22,11 @@
     setHomepage();
     id("order-btn").addEventListener("click", setHomepage);
     id("home-btn").addEventListener("click", setHomepage);
+    id("update-btn").addEventListener("click", updatePhone);
+    id("submit-btn").addEventListener("click", (event) => {
+      event.preventDefault();
+      updateDatabase();
+    });
   }
 
   /**
@@ -71,8 +78,11 @@
   }
 
   /**
-   * Makes a call to the api to get the cost of all the parts.
+   * Makes a call to the api to get the cost of all the parts then updates DOM with net price.
    * @param {int[]} partsList - array with the value being the id of the part
+   * @param {float} netGain - How much profit the phone brought
+   * @param {float} netLoss - How much the phone cost
+   * @param {element} element - The element that will be updated with net price
    */
   function partsCost(partsList, netGain, netLoss, element) {
     if (partsList.length > 0) {
@@ -110,9 +120,11 @@
     clearParts();
     let list = id("parts-list");
     for (let i = 0; i < partsList.length; i++) {
-      let part = gen("li");
-      part.textContent = partsList[i][0].part_name;
-      list.appendChild(part);
+      if (partsList[i][0] !== undefined) {
+        let part = gen("li");
+        part.textContent = partsList[i][0].part_name;
+        list.appendChild(part);
+      }
     }
   }
 
@@ -124,6 +136,13 @@
     for (let i = 0; i < parts.length; i++) {
       parts[i].remove();
     }
+  }
+
+  /**
+   * Collects the information from the form and
+   */
+  function updateDatabase() {
+    // TODO: build the query piece by piece based on what info is to be updated
   }
 
   /**
@@ -145,6 +164,10 @@
    */
   function singlePhone(phoneInfo) {
     hideHomepage();
+    id("single-phone").attr = phoneInfo.phone_id;
+    id("single-phone").attr1 = phoneInfo.model_id;
+    id("status-img").src = IMG_PATH_STATUS + phoneInfo.status + ".png";
+    id("status-text").textContent = getStatus(phoneInfo.status);
     id("phone-img").src = IMG_PATH_PHONES + phoneInfo.model_id + ".jpeg";
     id("model").textContent = phoneInfo.model;
     id("date-aquired").textContent = phoneInfo.date_aquired;
@@ -167,7 +190,6 @@
    * @param {element} element - The element that will be displayed with the new text
    */
   function updateCost(netGain, netLoss, parts, element) {
-    console.log("The net gain for " + element.textContent + " is " + netGain + " and net loss is " + netLoss + " and the parts cost " + parts);
     let netPrice = netGain - (netLoss + parts);
     if (netPrice >= 0) {
       element.textContent = "$" + netPrice.toFixed(2);
@@ -197,6 +219,106 @@
         partsList.push(parts[i]);
       }
     }
+  }
+
+  /**
+   * Displays a form to fill out to update the information of the selected phone
+   */
+  function updatePhone() {
+    hideSingleview();
+    clearUpdatePage();
+    showParts();
+  }
+
+  /**
+   * Fetches for the parts for purchase for the selected phone
+   */
+  function showParts() {
+    let query = "?model=" + id("single-phone").attr1;
+    fetch("/allParts" + query)
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(displayPartOptions)
+      .catch(handleError);
+  }
+
+  /**
+   * Populates the DOM with the list of parts for purchase
+   * @param {json} partsList - Array of names of all part names and part id
+   */
+  function displayPartOptions(partsList) {
+    let selection = id("parts");
+    for (let i = 0; i < partsList.length; i++) {
+      let part = gen("div");
+      part.classList.add("part-selector");
+      part.attr = partsList[i].part_id;
+      let box = gen("div");
+      box.classList.add("box");
+      let name = gen("p");
+      name.textContent = partsList[i].part_name;
+      part.appendChild(box);
+      part.appendChild(name);
+      selection.appendChild(part);
+      part.addEventListener("click", () => {
+        part.classList.toggle("selected");
+      });
+    }
+  }
+
+  /**
+   * Helper method, hides the single phone view
+   */
+  function hideSingleview() {
+    id("single-phone").classList.add("hidden");
+    id("update-area").classList.remove("hidden");
+    id("update-btn").classList.add("hidden");
+  }
+
+  /**
+   * Helper method to make sure that the update page is reset between phones
+   */
+  function clearUpdatePage() {
+    id("issue-update").value = "";
+    let parts = qsa(".part-selector");
+    for (let i = 0; i < parts.length; i++) {
+      parts[i].remove();
+    }
+    id("sell-price").value = "";
+  }
+
+  /**
+   * Makes sure that when a new search begins that there isn't any old query results
+   */
+  function clearHomepage() {
+    let phones = qsa("div.phone-card");
+    for (let i = 0; i < phones.length; i++) {
+      phones[i].remove();
+    }
+  }
+
+  /**
+   * Makes sure the right things are hidden and displayed when the home page comes up
+   */
+  function homeButton() {
+    id("single-phone").classList.add("hidden");
+    id("err-text").classList.add("hidden");
+    id("all-phones").classList.remove("hidden");
+    id("update-btn").classList.add("hidden");
+    id("add-phone").classList.remove("hidden");
+    id("phones").classList.remove("hidden");
+    id("update-area").classList.add("hidden");
+  }
+
+  /**
+   * Helper method, when a user selects a single phone it hides the homepage
+   */
+  function hideHomepage() {
+    id("phones").classList.add("hidden");
+    id("all-phones").classList.add("hidden");
+    id("single-phone").classList.remove("hidden");
+    id("update-btn").classList.remove("hidden");
+    id("add-phone").classList.add("hidden");
+    id("err-text").classList.add("hidden");
   }
 
   /**
@@ -260,6 +382,16 @@
   }
 
   /**
+   * Helper method that gets the status of the phone based on its status code.
+   * @param {int} status - The int represnetation of the status of the phone
+   * @return {string} - String of the status of the phone
+   */
+  function getStatus(status) {
+    let statuses = ["Needs fixed", "Waiting for parts", "Fixing", "Fixed", "Sold"];
+    return statuses[status];
+  }
+
+  /**
    *
    * @param {div} phone - The phone card that holds all the information
    * @param {img} status - Small img indicating the status of the phone
@@ -274,40 +406,6 @@
     phone.appendChild(img);
     phone.appendChild(model);
     phone.appendChild(issues);
-  }
-
-  /**
-   * Makes sure that when a new search begins that there isn't any old query results
-   */
-  function clearHomepage() {
-    let phones = qsa("div.phone-card");
-    for (let i = 0; i < phones.length; i++) {
-      phones[i].remove();
-    }
-  }
-
-  /**
-   * Makes sure the right things are hidden and displayed when the home page comes up
-   */
-  function homeButton() {
-    id("single-phone").classList.add("hidden");
-    id("err-text").classList.add("hidden");
-    id("all-phones").classList.remove("hidden");
-    id("update-btn").classList.add("hidden");
-    id("add-phone").classList.remove("hidden");
-    id("phones").classList.remove("hidden");
-  }
-
-  /**
-   * Helper method, when a user selects a single phone it hides the homepage
-   */
-  function hideHomepage() {
-    id("phones").classList.add("hidden");
-    id("all-phones").classList.add("hidden");
-    id("single-phone").classList.remove("hidden");
-    id("update-btn").classList.remove("hidden");
-    id("add-phone").classList.add("hidden");
-    id("err-text").classList.add("hidden");
   }
 
   /**
