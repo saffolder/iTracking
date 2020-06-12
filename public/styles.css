@@ -13,6 +13,10 @@ body > main {
   padding-top: 182px;
 }
 
+#phones-data, footer {
+  background-color: lightgray;
+}
+
 header {
   background-image: url("images/header/header.png");
   height: 182px;
@@ -44,8 +48,11 @@ header > div {
   right: 34%;
 }
 
-button {
+button, .phone-card, #single-phone {
   background-color: white;
+}
+
+button {
   border: 2px thick black;
   border-radius: 2em;
   text-align: center;
@@ -53,6 +60,15 @@ button {
   text-shadow: 2px 0 2px black;
   bottom: 12px;
   font-size: 18pt;
+}
+
+button:hover {
+  background-color: black;
+  border: 2px thick gold;
+}
+
+.phone-card:hover {
+  box-shadow: 0 0 15px gold;
 }
 
 #update-btn, #home-btn, #add-phone {
@@ -115,10 +131,6 @@ h1 {
 
 #single-phone, #phones {
   align-items: center;
-}
-
-#single-phone > * {
-  text-decoration: none;
 }
 
 #status-img {
@@ -203,10 +215,13 @@ h1 {
   color: green;
 }
 
+#issue-description {
+  text-decoration: underline gold;
+}
+
 footer {
   width: 85%;
   text-align: center;
-  background-color: lightgray;
   color: black;
   font-family: 'Montaga', serif;
   margin-bottom: 35px;
@@ -224,6 +239,6 @@ footer > p {
   font-size: 15pt;
 }
 
-.hidden, #phones.hidden, #single-phone.hidden {
+.hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden {
   display: none;
 }

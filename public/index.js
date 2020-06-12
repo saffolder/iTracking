@@ -67,18 +67,14 @@
       phone.addEventListener("click", getPhoneData);
       display.appendChild(phone);
     }
-    let parts = partsCost(partsList);
-    updateCost(netGain, netLoss, parts, id("income"));
+    partsCost(partsList, netGain, netLoss, id("income"));
   }
 
   /**
    * Makes a call to the api to get the cost of all the parts.
    * @param {int[]} partsList - array with the value being the id of the part
-   * @return {double} - The total cost of the parts
    */
-  function partsCost(partsList) {
-    let cost = 0.0;
-    console.log(partsList);
+  function partsCost(partsList, netGain, netLoss, element) {
     if (partsList.length > 0) {
       let parts = new FormData();
       parts.append("parts", partsList);
@@ -86,11 +82,10 @@
         .then(checkStatus)
         .then(value => value.text())
         .then((price) => {
-          cost = parseFloat(price).toFixed(2);
+          updateCost(netGain, netLoss, parseFloat(price), element);
         })
         .catch(handleError);
     }
-    return cost;
   }
 
   /**
@@ -154,15 +149,14 @@
     id("model").textContent = phoneInfo.model;
     id("date-aquired").textContent = phoneInfo.date_aquired;
     id("issue-description").textContent = phoneInfo.issues;
-    let partsList = [];
-    addParts(partsList, phoneInfo.parts_purchased);
-    getParts(partsList);
-    let parts = partsCost(partsList);
-    id("parts-total").textContent = "$" + parts;
     let netGain = phoneInfo.sold || 0.0;
     id("sold-price").textContent = "$" + netGain;
     id("phone-cost").textContent = "$" + phoneInfo.phone_cost;
-    updateCost(netGain, phoneInfo.phone_cost, parts, id("net-price"));
+    let partsList = [];
+    addParts(partsList, phoneInfo.parts_purchased);
+    getParts(partsList);
+    partsCost(partsList, netGain, phoneInfo.phone_cost, id("net-price"));
+    partsCost(partsList, 0, 0, id("parts-total"));
   }
 
   /**
@@ -173,6 +167,7 @@
    * @param {element} element - The element that will be displayed with the new text
    */
   function updateCost(netGain, netLoss, parts, element) {
+    console.log("The net gain for " + element.textContent + " is " + netGain + " and net loss is " + netLoss + " and the parts cost " + parts);
     let netPrice = netGain - (netLoss + parts);
     if (netPrice >= 0) {
       element.textContent = "$" + netPrice.toFixed(2);

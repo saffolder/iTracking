@@ -104,15 +104,14 @@ app.post("/partsCost", async function(req, res) {
 async function getPartsCost(partsList) {
   try {
     let database = await getDBConnection();
-    let total = 0.0;
-    for (let i = 0; i < partsList.length; i++) {
+    let total = 0.00;
+    for (let i = 0; i < partsList.length; i += 2) {
       let query = "SELECT part_cost FROM parts WHERE part_id =?;";
       let partPrice = await database.all(query, [partsList[i].toString()]);
-      console.log(partPrice);
-      total += partPrice;
+      total = total + partPrice[0].part_cost;
     }
     database.close();
-    return total;
+    return total.toFixed(2).toString();
   } catch (error) {
     console.error(error);
   }
