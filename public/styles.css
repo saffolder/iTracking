@@ -15,10 +15,13 @@ body > main {
 
 header {
   background-image: url("images/header/header.png");
-  box-shadow: 0 5px 5px lightgray;
   height: 182px;
   width: 100%;
   position: fixed;
+}
+
+header, footer {
+  box-shadow: 3px 3px 3px gold;
 }
 
 header > div {
@@ -29,11 +32,11 @@ header > div {
 
 #title {
   left: 15%;
+  text-shadow: 2px 0 2px white;
 }
 
 #title, button {
   color: rgb(255, 217, 0);
-  text-shadow: 2px 0 2px white;
 }
 
 #income {
@@ -42,27 +45,37 @@ header > div {
 }
 
 button {
-  background-color: black;
-  border: gold;
+  background-color: white;
+  border: 2px thick black;
+  border-radius: 2em;
+  text-align: center;
+  padding: 0.3em 0.8em;
+  text-shadow: 2px 0 2px black;
+  bottom: 12px;
+  font-size: 18pt;
+}
+
+#update-btn, #home-btn, #add-phone {
+  position: absolute;
 }
 
 button, .phone-card {
   cursor: pointer;
 }
 
-#add-phone, #home-btn {
-  bottom: 12px;
-  font-size: 18pt;
-  padding: 3px;
-  position: absolute;
-}
-
 #add-phone {
   right: 12%;
+  width: 175px;
 }
 
 #home-btn {
   right: 4%;
+  width: 100px;
+}
+
+#update-btn {
+  right: 12%;
+  width: 225px;
 }
 
 h1 {
@@ -104,6 +117,10 @@ h1 {
   align-items: center;
 }
 
+#single-phone > * {
+  text-decoration: none;
+}
+
 #status-img {
   width: 30px;
   height: 30px;
@@ -133,7 +150,7 @@ h1 {
   margin: 20px;
   padding: 5px 5px 0px 5px;
   width: 330px;
-  height: 425px;
+  height: 450px;
   justify-content: flex-start;
 }
 
@@ -173,7 +190,7 @@ h1 {
   margin-left: 15px;
 }
 
-#phones {
+#phones, footer {
   margin-left: auto;
   margin-right: auto;
 }
@@ -186,6 +203,27 @@ h1 {
   color: green;
 }
 
-.hidden, #all-phones.hidden, #single-phone.hidden {
+footer {
+  width: 85%;
+  text-align: center;
+  background-color: lightgray;
+  color: black;
+  font-family: 'Montaga', serif;
+  margin-bottom: 35px;
+}
+
+footer > * {
+  padding: 12px;
+}
+
+footer > h1 {
+  font-size: 18pt;
+}
+
+footer > p {
+  font-size: 15pt;
+}
+
+.hidden, #phones.hidden, #single-phone.hidden {
   display: none;
 }

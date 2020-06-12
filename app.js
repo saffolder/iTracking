@@ -18,11 +18,69 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
 
-/*app.post("/phoneInfo", function(req, res) {
-  let phoneId = req.body.phone_id;
-  let phoneInfo = getPhoneInfo(phoneId);
-  // send back json
-});*/
+/**
+ * Endpoint that returns names of parts based on their part id
+ */
+app.post("/phoneParts", async function(req, res) {
+  try {
+    let content = await getPartNames(req.body.parts);
+    res.json(content);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Returns json array of all the parts
+ * @param {int[]} partsList - int array where the int maps to the part id in the database
+ * @return {json} - Array of strings of the names of the parts
+ */
+async function getPartNames(partsList) {
+  try {
+    let query = "SELECT part_name FROM parts WHERE part_id =?;";
+    let database = await getDBConnection();
+    let parts = [];
+    for (let i = 0; i < partsList.length; i++) {
+      let part = await database.all(query, [partsList[i].toString()]);
+      parts.push(part);
+    }
+    database.close();
+    return parts;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Endpoint that gets specific information from the database of just one phone
+ */
+app.post("/phoneInfo", async function(req, res) {
+  try {
+    let content = await getPhoneInfo(req.body.phone_id);
+    res.json(content[0]);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Gets the information on the specified phone
+ * @param {int} phoneId - The id of the phone in the database
+ * @return {json} - JSON formatted information
+ */
+async function getPhoneInfo(phoneId) {
+  try {
+    let query = "SELECT * FROM phones WHERE phone_id =?;";
+    let database = await getDBConnection();
+    let content = await database.all(query, [phoneId]);
+    database.close();
+    return content;
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 /**
  * Returns a string represnetation of a double of the cost of all the parts ever purchased
@@ -33,7 +91,7 @@ app.post("/partsCost", async function(req, res) {
     res.type("text");
     res.send(content);
   } catch (error) {
-    res.send("text");
+    res.type("text");
     res.send(error);
   }
 });
@@ -50,8 +108,10 @@ async function getPartsCost(partsList) {
     for (let i = 0; i < partsList.length; i++) {
       let query = "SELECT part_cost FROM parts WHERE part_id =?;";
       let partPrice = await database.all(query, [partsList[i].toString()]);
+      console.log(partPrice);
       total += partPrice;
     }
+    database.close();
     return total;
   } catch (error) {
     console.error(error);

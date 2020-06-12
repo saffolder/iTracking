@@ -19,14 +19,14 @@
   function init() {
     setHomepage();
     id("order-btn").addEventListener("click", setHomepage);
+    id("home-btn").addEventListener("click", setHomepage);
   }
 
   /**
    * Makes a fetch request for the information of all the phones from the database
    */
   function setHomepage() {
-    id("err-text").classList.add("hidden");
-    id("single-phone").classList.add("hidden");
+    homeButton();
     clearHomepage();
     let order = id("order-by").value;
     fetch("/allPhones?order=" + order)
@@ -68,7 +68,7 @@
       display.appendChild(phone);
     }
     let parts = partsCost(partsList);
-    updateCost(netGain, netLoss, parts);
+    updateCost(netGain, netLoss, parts, id("income"));
   }
 
   /**
@@ -77,17 +77,92 @@
    * @return {double} - The total cost of the parts
    */
   function partsCost(partsList) {
+    let cost = 0.0;
+    console.log(partsList);
+    if (partsList.length > 0) {
+      let parts = new FormData();
+      parts.append("parts", partsList);
+      fetch("/partsCost", {method: "POST", body: parts})
+        .then(checkStatus)
+        .then(value => value.text())
+        .then((price) => {
+          cost = parseFloat(price).toFixed(2);
+        })
+        .catch(handleError);
+    }
+    return cost;
+  }
+
+  /**
+   * Makes a fetch to the api for a list of the parts names
+   * @param {int[]} partsList - array with the value being the id of the part
+   */
+  function getParts(partsList) {
     let parts = new FormData();
     parts.append("parts", partsList);
-    let cost = 0.0;
-    fetch("/partsCost", {method: "POST", body: parts})
+    fetch("/phoneParts", {method: "POST", body: parts})
       .then(checkStatus)
-      .then(value => value.text())
-      .then((price) => {
-        cost = parseFloat(price).toFixed(2);
-      })
+      .then(response => response.json())
+      .then(displayParts)
       .catch(handleError);
-    return cost;
+  }
+
+  /**
+   * Displays in a list the parts purchased for this phone
+   * @param {json} partsList - json array of the names of parts purchased for the phone
+   */
+  function displayParts(partsList) {
+    clearParts();
+    let list = id("parts-list");
+    for (let i = 0; i < partsList.length; i++) {
+      let part = gen("li");
+      part.textContent = partsList[i][0].part_name;
+      list.appendChild(part);
+    }
+  }
+
+  /**
+   * Removes all of the old parts off the DOM
+   */
+  function clearParts() {
+    let parts = qsa("#parts-list > *");
+    for (let i = 0; i < parts.length; i++) {
+      parts[i].remove();
+    }
+  }
+
+  /**
+   * Makes a fetch request to get detailed information on the selected phone
+   */
+  function getPhoneData() {
+    let phoneBody = new FormData();
+    phoneBody.append("phone_id", this.attr);
+    fetch("/phoneInfo", {method: "POST", body: phoneBody})
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(singlePhone)
+      .catch(handleError);
+  }
+
+  /**
+   * Changes view from all phones to the phone clicked and displays the clicked phones information
+   * @param {json} phoneInfo - Formatted information about the single phone.
+   */
+  function singlePhone(phoneInfo) {
+    hideHomepage();
+    id("phone-img").src = IMG_PATH_PHONES + phoneInfo.model_id + ".jpeg";
+    id("model").textContent = phoneInfo.model;
+    id("date-aquired").textContent = phoneInfo.date_aquired;
+    id("issue-description").textContent = phoneInfo.issues;
+    let partsList = [];
+    addParts(partsList, phoneInfo.parts_purchased);
+    getParts(partsList);
+    let parts = partsCost(partsList);
+    id("parts-total").textContent = "$" + parts;
+    let netGain = phoneInfo.sold || 0.0;
+    id("sold-price").textContent = "$" + netGain;
+    id("phone-cost").textContent = "$" + phoneInfo.phone_cost;
+    updateCost(netGain, phoneInfo.phone_cost, parts, id("net-price"));
   }
 
   /**
@@ -95,18 +170,18 @@
    * @param {double} netGain - How much money made from selling
    * @param {double} netLoss - The cost of phones
    * @param {int} parts - The cost of parts
+   * @param {element} element - The element that will be displayed with the new text
    */
-  function updateCost(netGain, netLoss, parts) {
-    let income = id("income");
+  function updateCost(netGain, netLoss, parts, element) {
     let netPrice = netGain - (netLoss + parts);
     if (netPrice >= 0) {
-      income.textContent = "$" + netPrice.toFixed(2);
-      income.remove("debt");
-      income.classList.add("gain");
+      element.textContent = "$" + netPrice.toFixed(2);
+      element.remove("debt");
+      element.classList.add("gain");
     } else {
-      income.textContent = "$" + Math.abs(netPrice.toFixed(2));
-      income.classList.remove("gain");
-      income.classList.add("debt");
+      element.textContent = "$" + Math.abs(netPrice.toFixed(2));
+      element.classList.remove("gain");
+      element.classList.add("debt");
     }
   }
 
@@ -116,9 +191,14 @@
    * @param {string} partsPurchased - String representation of parts list of given phone
    */
   function addParts(partsList, partsPurchased) {
-    let parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
+    let parts = [];
+    if (partsPurchased.length > 3) {
+      parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
+    } else {
+      parts = partsPurchased.substring(1, 2);
+    }
     for (let i = 0; i < parts.length; i++) {
-      if (parts[i] !== "") {
+      if (!isNaN(parts[i])) {
         partsList.push(parts[i]);
       }
     }
@@ -185,19 +265,6 @@
   }
 
   /**
-   * Makes a fetch request to get detailed information on the selected phone
-   */
-  function getPhoneData() {
-    let phoneBody = new FormData();
-    phoneBody.append("phone_id", this.attr);
-    fetch("/phoneInfo", {method: "POST", body: phoneBody})
-      .then(checkStatus)
-      .then(response => response.json())
-      .then(singlePhone)
-      .catch(handleError);
-  }
-
-  /**
    *
    * @param {div} phone - The phone card that holds all the information
    * @param {img} status - Small img indicating the status of the phone
@@ -225,11 +292,27 @@
   }
 
   /**
-   * Changes view from all phones to the phone clicked
+   * Makes sure the right things are hidden and displayed when the home page comes up
    */
-  function singlePhone() {
-    id("all-phones").classList.add("hidden");
+  function homeButton() {
+    id("single-phone").classList.add("hidden");
+    id("err-text").classList.add("hidden");
+    id("all-phones").classList.remove("hidden");
+    id("update-btn").classList.add("hidden");
+    id("add-phone").classList.remove("hidden");
+    id("phones").classList.remove("hidden");
+  }
 
+  /**
+   * Helper method, when a user selects a single phone it hides the homepage
+   */
+  function hideHomepage() {
+    id("phones").classList.add("hidden");
+    id("all-phones").classList.add("hidden");
+    id("single-phone").classList.remove("hidden");
+    id("update-btn").classList.remove("hidden");
+    id("add-phone").classList.add("hidden");
+    id("err-text").classList.add("hidden");
   }
 
   /**
