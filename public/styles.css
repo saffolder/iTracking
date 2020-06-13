@@ -182,7 +182,7 @@ h1 {
   box-shadow: 0 0 15px gray;
   padding: 5px 5px 0px 5px;
   width: 330px;
-  height: 450px;
+  height: 480px;
 }
 
 .phone-card, #parts {
@@ -230,7 +230,7 @@ h1 {
   font-size: 17pt;
 }
 
-.model-name, .issues {
+.phone-card > p {
   margin-left: 15px;
 }
 

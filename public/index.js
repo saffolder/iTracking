@@ -7,8 +7,6 @@
  */
 "use strict";
 
-const e = require("express");
-
 (function() {
 
   const IMG_PATH_PHONES = "images/phones/iPhone";
@@ -39,16 +37,18 @@ const e = require("express");
     fetch("/allPhones?order=" + order)
       .then(checkStatus)
       .then(response => response.json())
-      .then(displayPhones)
+      .then((content) => {
+        displayPhones(content, id("phones"));
+      })
       .catch(handleError);
   }
 
   /**
    * Populates the homepage with the data in a neat format
    * @param {json} phoneData - Basic information on all of the phones in the database
+   * @param {section} display - The container for the phone divs
    */
-  function displayPhones(phoneData) {
-    let display = id("phones");
+  function displayPhones(phoneData, display) {
     let netLoss = 0.0;
     let netGain = 0.0;
     let partsList = [];
@@ -58,6 +58,8 @@ const e = require("express");
       setPhone(phone, phoneData[i].phone_id);
       let status = gen("img");
       setStatus(status, phoneData[i].status);
+      let phoneId = gen("p");
+      setPhoneId(phoneId, phoneData[i].phone_id);
       let img = gen("img");
       setImage(img, phoneData[i].model_id);
       let model = gen("p");
@@ -70,8 +72,10 @@ const e = require("express");
       if (phoneData[i].sold) {
         netGain += phoneData[i].sold;
       }
-      appendChildren(phone, status, img, model, cost, issues);
-      phone.addEventListener("click", getPhoneData);
+      appendChildren(phone, status, phoneId, img, model, cost, issues);
+      phone.addEventListener("click", () => {
+        getPhoneData(phoneData[i].phone_id);
+      });
       display.appendChild(phone);
     }
     partsCost(partsList, netGain, netLoss, id("income"));
@@ -143,14 +147,41 @@ const e = require("express");
    */
   function updateDatabase() {
     // TODO: build the query piece by piece based on what info is to be updated
+    // push the updates as a string to teh updates array.
+    let updates = [];
+    let statusUpdate = id("status-update").value; // console.log(id("status-update").value);
+    updates.push(statusUpdate);
+    if (id("issue-update").value !== "") {
+      let issuesUpdate = id("issue-update").value; // console.log(id("issue-update").value);
+      updates.push(issuesUpdate);
+    }
+    let newParts = qsa(".part-selector.selected");
+    if (newParts.length > 0) {
+      console.log("These are the new parts to order: ");
+      console.log(newParts);
+      updates.push(allPartsOrdered(newParts)); // make function that adds these parts attr to the already purchased parts
+    } else {
+      console.log("there are no new parts to order");
+    }
+    // let partsUpdate
+    if (!isNaN(id("sell-price").value) && id("sell-price").value >= 0){
+      console.log("congrats on selling for $" + id("sell-price").value);
+    } else {
+      console.log("Still haven't sold :(");
+    }
+    // let sellUpdate
+    makeUpdates(updates);
+    hideUpdate();
+    getPhoneData(id("single-phone").attr);
   }
 
   /**
    * Makes a fetch request to get detailed information on the selected phone
+   * @param {string} phoneId - The id of the phone
    */
-  function getPhoneData() {
+  function getPhoneData(phoneId) {
     let phoneBody = new FormData();
-    phoneBody.append("phone_id", this.attr);
+    phoneBody.append("phone_id", phoneId);
     fetch("/phoneInfo", {method: "POST", body: phoneBody})
       .then(checkStatus)
       .then(response => response.json())
@@ -310,6 +341,13 @@ const e = require("express");
   }
 
   /**
+   * Helper method, hides the update screen once an update has been made
+   */
+  function hideUpdate() {
+    id("update-area").classList.add("hidden");
+  }
+
+  /**
    * Helper method, when a user selects a single phone it hides the homepage
    */
   function hideHomepage() {
@@ -319,6 +357,15 @@ const e = require("express");
     id("update-btn").classList.remove("hidden");
     id("add-phone").classList.add("hidden");
     id("err-text").classList.add("hidden");
+  }
+
+  /**
+   * Sets the phone id on the main page for each phone
+   * @param {p} phoneIdEl - paragraph element
+   * @param {string} phoneId - The phone id
+   */
+  function setPhoneId(phoneIdEl, phoneId) {
+    phoneIdEl.textContent = phoneId;
   }
 
   /**
@@ -387,25 +434,27 @@ const e = require("express");
    * @return {string} - String of the status of the phone
    */
   function getStatus(status) {
-    let statuses = ["Needs fixed", "Waiting for parts", "Fixing", "Fixed", "Sold"];
+    let statuses = ["Needs fixed", "Waiting for parts", "Fixing", "Fixed", "Sold", "Can't fix"];
     return statuses[status];
   }
 
   /**
-   *
+   * Helper method that adds all the children to the DOM
    * @param {div} phone - The phone card that holds all the information
    * @param {img} status - Small img indicating the status of the phone
+   * @param {p} phoneId - The paragraph the contains the phone id
    * @param {img} img - The picture of the iPhone
    * @param {p} model - Text with the iPhone model
    * @param {span} cost - Text of how much the phone cost
    * @param {p} issues - Text describing the issues of the phone.
    */
-  function appendChildren(phone, status, img, model, cost, issues) {
+  function appendChildren(phone, status, phoneId, img, model, cost, issues) {
     model.appendChild(cost);
     phone.appendChild(status);
     phone.appendChild(img);
     phone.appendChild(model);
     phone.appendChild(issues);
+    phone.appendChild(phoneId);
   }
 
   /**
