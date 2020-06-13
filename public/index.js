@@ -52,6 +52,8 @@
     let netLoss = 0.0;
     let netGain = 0.0;
     let partsList = [];
+    console.log(phoneData);
+
     for (let i = 0; i < phoneData.length; i++) {
       addParts(partsList, phoneData[i].parts_purchased);
       let phone = gen("div");
@@ -69,9 +71,7 @@
       netLoss += phoneData[i].phone_cost;
       let issues = gen("p");
       setIssues(issues, phoneData[i].issues);
-      if (phoneData[i].sold) {
-        netGain += phoneData[i].sold;
-      }
+      if (phoneData[i].sold) {netGain += phoneData[i].sold;}
       appendChildren(phone, status, phoneId, img, model, cost, issues);
       phone.addEventListener("click", () => {
         getPhoneData(phoneData[i].phone_id);
@@ -89,7 +89,7 @@
    * @param {element} element - The element that will be updated with net price
    */
   function partsCost(partsList, netGain, netLoss, element) {
-    if (partsList.length > 0) {
+    if (partsList !== null) {
       let parts = new FormData();
       parts.append("parts", partsList);
       fetch("/partsCost", {method: "POST", body: parts})
@@ -99,6 +99,8 @@
           updateCost(netGain, netLoss, parseFloat(price), element);
         })
         .catch(handleError);
+    } else {
+      updateCost(netGain, netLoss, 0, element);
     }
   }
 
@@ -123,12 +125,12 @@
   function displayParts(partsList) {
     clearParts();
     let list = id("parts-list");
-    for (let i = 0; i < partsList.length; i++) {
-      if (partsList[i][0] !== undefined) {
-        let part = gen("li");
-        part.textContent = partsList[i][0].part_name;
-        list.appendChild(part);
-      }
+    console.log(partsList);
+    for (let i = 0; i < partsList.length; i += 2) {
+      let part = gen("li");
+      part.attr = partsList[i].part.part_id;
+      part.textContent = partsList[i].part.part_name.part_name;
+      list.appendChild(part);
     }
   }
 
@@ -137,42 +139,88 @@
    */
   function clearParts() {
     let parts = qsa("#parts-list > *");
+    console.log(parts);
+
     for (let i = 0; i < parts.length; i++) {
       parts[i].remove();
     }
   }
 
   /**
-   * Collects the information from the form and
+   * Collects the information from the form
    */
   function updateDatabase() {
-    // TODO: build the query piece by piece based on what info is to be updated
-    // push the updates as a string to teh updates array.
     let updates = [];
-    let statusUpdate = id("status-update").value; // console.log(id("status-update").value);
-    updates.push(statusUpdate);
+    let values = [];
+    updates.push("status =?");
+    values.push(id("status-update").value);
     if (id("issue-update").value !== "") {
-      let issuesUpdate = id("issue-update").value; // console.log(id("issue-update").value);
-      updates.push(issuesUpdate);
+      updates.push("issues =?");
+      values.push(id("issue-update").value);
     }
     let newParts = qsa(".part-selector.selected");
+    console.log(newParts);
+
     if (newParts.length > 0) {
-      console.log("These are the new parts to order: ");
-      console.log(newParts);
-      updates.push(allPartsOrdered(newParts)); // make function that adds these parts attr to the already purchased parts
-    } else {
-      console.log("there are no new parts to order");
+      updates.push("parts_purchased =?");
+      values.push(allPartsOrdered(newParts).toString());
     }
-    // let partsUpdate
-    if (!isNaN(id("sell-price").value) && id("sell-price").value >= 0){
-      console.log("congrats on selling for $" + id("sell-price").value);
-    } else {
-      console.log("Still haven't sold :(");
+    if (id("sell-price").value !== "") {
+      updates.push("sold =?");
+      values.push(id("sell-price").value);
     }
-    // let sellUpdate
-    makeUpdates(updates);
-    hideUpdate();
-    getPhoneData(id("single-phone").attr);
+    makeUpdates(id("single-phone").attr, updates, values);
+  }
+
+  /**
+   * Makes a fetch to the backend to update database with new information on phone
+   * @param {int} phone - the phone id to update
+   * @param {string[]} updates - The query for the updates
+   * @param {object[]} values - The objects for the update (matching indexes to updates)
+   */
+  function makeUpdates(phone, updates, values) {
+    fetch("/updatePhone", {method: "POST", headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }, body: JSON.stringify({phoneId: phone, update: updates, value: values})})
+      .then(checkStatus)
+      .then(response => response.text())
+      .then(alertUpdate)
+      .then(() => {
+        hideUpdate();
+        getPhoneData(id("single-phone").attr);
+      })
+      .catch(handleError);
+  }
+
+  /**
+   * Alerts the user of message
+   * @param {string} message - Update success or failure message
+   */
+  function alertUpdate(message) {
+    console.log(message);
+  }
+
+  /**
+   * Adds newParts to current list of purchased parts for this phone
+   * @param {element[]} newParts - Array of the selected parts list
+   * @return {int[]} - int array of all the part ids of ordered parts for this phone
+   */
+  function allPartsOrdered(newParts) {
+    let parts = id("parts-list").children;
+    let allParts = [];
+    console.log(parts);
+
+    for (let i = 0; i < parts.length; i++) {
+      allParts.push(parseInt(parts[i].attr));
+    }
+    console.log(newParts);
+
+    for (let i = 0; i < newParts.length; i++) {
+      allParts.push(newParts[i].attr);
+    }
+    console.log(allParts.toString());
+    return allParts;
   }
 
   /**
@@ -239,15 +287,21 @@
    * @param {string} partsPurchased - String representation of parts list of given phone
    */
   function addParts(partsList, partsPurchased) {
-    let parts = [];
-    if (partsPurchased.length > 3) {
-      parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
-    } else {
-      parts = partsPurchased.substring(1, 2);
-    }
-    for (let i = 0; i < parts.length; i++) {
-      if (!isNaN(parts[i])) {
-        partsList.push(parts[i]);
+    if (partsPurchased !== null) {
+      let parts = [];
+      console.log(partsPurchased);
+
+      if (partsPurchased.length > 3) {
+        parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
+      } else {
+        parts = partsPurchased.substring(1, 2);
+      }
+      console.log(parts);
+
+      for (let i = 0; i < parts.length; i++) {
+        if (!isNaN(parts[i])) {
+          partsList.push(parts[i]);
+        }
       }
     }
   }
@@ -279,6 +333,8 @@
    */
   function displayPartOptions(partsList) {
     let selection = id("parts");
+    console.log(partsList);
+
     for (let i = 0; i < partsList.length; i++) {
       let part = gen("div");
       part.classList.add("part-selector");
@@ -311,6 +367,8 @@
   function clearUpdatePage() {
     id("issue-update").value = "";
     let parts = qsa(".part-selector");
+    console.log(parts);
+
     for (let i = 0; i < parts.length; i++) {
       parts[i].remove();
     }
@@ -322,6 +380,8 @@
    */
   function clearHomepage() {
     let phones = qsa("div.phone-card");
+    console.log(phones);
+
     for (let i = 0; i < phones.length; i++) {
       phones[i].remove();
     }
@@ -331,6 +391,7 @@
    * Makes sure the right things are hidden and displayed when the home page comes up
    */
   function homeButton() {
+    id("income").classList.remove("hidden");
     id("single-phone").classList.add("hidden");
     id("err-text").classList.add("hidden");
     id("all-phones").classList.remove("hidden");
@@ -351,6 +412,7 @@
    * Helper method, when a user selects a single phone it hides the homepage
    */
   function hideHomepage() {
+    id("income").classList.add("hidden");
     id("phones").classList.add("hidden");
     id("all-phones").classList.add("hidden");
     id("single-phone").classList.remove("hidden");

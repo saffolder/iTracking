@@ -19,6 +19,40 @@ app.use(express.json());
 app.use(multer().none());
 
 /**
+ * Endpoint that returns a succes or fail to update message
+ */
+app.post("/updatePhone", async function(req, res) {
+  try {
+    let content = await updatePhone(req.body.phoneId, req.body.update, req.body.value);
+    res.type("text");
+    res.send(content);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Updates the database with the new information
+ * @param {int} phoneId - The id of the phone
+ * @param {string[]} updates - The attributes to update
+ * @param {object[]} values - The values to the corresponding attributes
+ */
+async function updatePhone(phoneId, updates, values) {
+  try {
+    let database = await getDBConnection();
+    for (let i = 0; i < updates.length; i++) {
+      let query = "UPDATE phones SET " + updates[i] + " WHERE phone_id=?;";
+      await database.all(query, [values[i], phoneId]);
+    }
+    database.close();
+    return "Updated succesfully";
+  } catch (error) {
+    return "Failed to update, try again later";
+  }
+}
+
+/**
  * Endpoint that returns all of the parts and their id's for a given phone model
  */
 app.get("/allParts", async function(req, res) {
@@ -49,7 +83,7 @@ async function getModelParts(model) {
 }
 
 /**
- * Endpoint that returns names of parts based on their part id
+ * Endpoint that returns names of parts and their id based on their part id
  */
 app.post("/phoneParts", async function(req, res) {
   try {
@@ -73,7 +107,9 @@ async function getPartNames(partsList) {
     let parts = [];
     for (let i = 0; i < partsList.length; i++) {
       let part = await database.all(query, [partsList[i].toString()]);
-      parts.push(part);
+      let test1 = partsList[i];
+      let partName = part[0];
+      parts.push({"part": {"part_id": test1, "part_name": partName}});
     }
     database.close();
     return parts;
