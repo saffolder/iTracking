@@ -19,6 +19,21 @@ app.use(express.json());
 app.use(multer().none());
 
 /**
+ * Endpoint that returns json with the phone id and a success or failure message
+ */
+app.post("/addPhone", function(req, res) {
+  try {
+    console.log(req.body.model-select);
+    //let content = await addPhone(req.body.model);
+    res.type("text");
+    res.send("content");
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+})
+
+/**
  * Endpoint that returns a succes or fail to update message
  */
 app.post("/updatePhone", async function(req, res) {
@@ -46,7 +61,7 @@ async function updatePhone(phoneId, updates, values) {
       await database.all(query, [values[i], phoneId]);
     }
     database.close();
-    return "Updated succesfully";
+    return "Successfully Updates!";
   } catch (error) {
     return "Failed to update, try again later";
   }

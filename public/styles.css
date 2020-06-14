@@ -13,7 +13,7 @@ body > main {
   padding-top: 182px;
 }
 
-#phones-data, footer, #updated-form {
+#phones-data, footer, form {
   background-color: lightgray;
 }
 
@@ -39,11 +39,11 @@ header > div {
   text-shadow: 2px 0 2px white;
 }
 
-#title, button, #updated-form > h2, .part-selector, #all-phones > h2 {
+#title, button, form > h2, .part-selector, #all-phones > h2 {
   color: rgb(255, 217, 0);
 }
 
-#updated-form > h2, #all-phones > h2 {
+form > h2, #all-phones > h2 {
   font-size: 30pt;
 }
 
@@ -62,19 +62,19 @@ button {
   border: 4px groove gold;
 }
 
-button#submit-btn {
+button#submit-btn, button#info-btn {
   position: sticky;
   margin: 22px;
 }
 
-button, #updated-form, #order-by, #status-update {
+button, form, #order-by, #status-update {
   border: 2px thick black;
   border-radius: 2em;
   padding: 0.3em 0.8em;
   bottom: 7px;
 }
 
-button, #updated-form, .part-selector, #all-phones > h2 {
+button, form, .part-selector, #all-phones > h2 {
   text-shadow: 2px 0 2px black;
 }
 
@@ -125,15 +125,15 @@ h1 {
   flex-wrap: wrap;
 }
 
-#phone-layout, #all-phones, #update-area, #parts {
+#phone-layout, #all-phones, .forms, #parts {
   align-items: flex-start;
 }
 
-#phone-layout, #single-phone, #all-phones, #phones, .phone-card, #updated-form, #update-area, #parts {
+#phone-layout, #single-phone, #all-phones, #phones, .phone-card, form, .forms, #parts {
   display: flex;
 }
 
-#phone-layout, #single-phone, #all-phones, #phones, #update-area, #updated-form {
+#phone-layout, #single-phone, #all-phones, #phones, .forms, form {
   justify-content: center;
 }
 
@@ -141,11 +141,11 @@ h1 {
   margin-top: 15px;
 }
 
-#single-phone, .phone-card, #updated-form {
+#single-phone, .phone-card, form {
   flex-direction: column;
 }
 
-#single-phone, #phones, #updated-form {
+#single-phone, #phones, form {
   align-items: center;
 }
 
@@ -168,11 +168,11 @@ h1 {
   height: 450px;
 }
 
-#phone-info, .model-name, #updated-form {
+#phone-info, .model-name, form {
   font-family: 'Barlow', sans-serif;
 }
 
-#status-update, #sell-price {
+#status-update, #sell-price, #model-select, #color-input, #cost-input, #date-input {
   width: 200px;
   height: 50px;
 }
@@ -189,7 +189,7 @@ h1 {
   justify-content: flex-start;
 }
 
-#updated-form, .phone-card {
+form, .phone-card {
   margin: 20px;
 }
 
@@ -234,7 +234,7 @@ h1 {
   margin-left: 15px;
 }
 
-#phones, footer, #update-area {
+#phones, footer, .forms {
   margin-left: auto;
   margin-right: auto;
 }
@@ -251,7 +251,7 @@ h1 {
   text-decoration: underline gold;
 }
 
-#update-area {
+.forms {
   width: 90%;
 }
 
@@ -291,7 +291,7 @@ footer {
   margin-bottom: 35px;
 }
 
-footer > *, #updated-form {
+footer > *, form {
   padding: 12px;
 }
 
@@ -303,6 +303,6 @@ footer > p {
   font-size: 15pt;
 }
 
-.hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden, #update-area.hidden {
+.hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden, .forms.hidden {
   display: none;
 }

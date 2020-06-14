@@ -21,10 +21,39 @@
     id("order-btn").addEventListener("click", setHomepage);
     id("home-btn").addEventListener("click", setHomepage);
     id("update-btn").addEventListener("click", updatePhone);
-    id("submit-btn").addEventListener("click", (event) => {
+    id("submit-btn").addEventListener("submit", (event) => {
       event.preventDefault();
       updateDatabase();
     });
+    id("add-phone").addEventListener("click", () => {
+      hideHomepage(true);
+    });
+    id("add-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      addPhoneToSystem();
+    });
+  }
+
+  /**
+   * When a new phone form has been submitted, fetches the update
+   */
+  function addPhoneToSystem() {
+    let data = id("add-form");
+    fetch("/addPhone", {method: "POST", body: data})
+      .then(checkStatus)
+      .then(response => response.text())
+      .then(displayPhone)
+      .catch(handleError);
+  }
+
+  /**
+   * After adding a phone it default views to that phone screen
+   * @param {json} content - phone id and message about success or failure to update
+   */
+  function displayPhone(content) {
+    alertUpdate(content);
+    hideMe(id("add-area"));
+    //getPhoneData(content.phone_id);
   }
 
   /**
@@ -178,9 +207,9 @@
     }, body: JSON.stringify({phoneId: phone, update: updates, value: values})})
       .then(checkStatus)
       .then(response => response.text())
-      .then(alertUpdate)
-      .then(() => {
-        hideUpdate();
+      .then((message) => {
+        alertUpdate(message);
+        hideMe(id("update-area"));
         getPhoneData(id("single-phone").attr);
       })
       .catch(handleError);
@@ -191,7 +220,7 @@
    * @param {string} message - Update success or failure message
    */
   function alertUpdate(message) {
-    // TODO: implement an update notification system
+    // TODO: implement an update notification system, use this after add a phone as well
     console.log(message);
   }
 
@@ -231,7 +260,7 @@
    * @param {json} phoneInfo - Formatted information about the single phone.
    */
   function singlePhone(phoneInfo) {
-    hideHomepage();
+    hideHomepage(false);
     id("single-phone").attr = phoneInfo.phone_id;
     id("single-phone").attr1 = phoneInfo.model_id;
     id("status-img").src = IMG_PATH_STATUS + phoneInfo.status + ".png";
@@ -378,19 +407,22 @@
     id("add-phone").classList.remove("hidden");
     id("phones").classList.remove("hidden");
     id("update-area").classList.add("hidden");
+    id("add-area").classList.add("hidden");
   }
 
   /**
-   * Helper method, hides the update screen once an update has been made
+   * Helper method, hides the element
+   * @param {element} element - The element to hide
    */
-  function hideUpdate() {
-    id("update-area").classList.add("hidden");
+  function hideMe(element) {
+    element.classList.add("hidden");
   }
 
   /**
    * Helper method, when a user selects a single phone it hides the homepage
+   * @param {boolean} addingPhone - true if adding a phone, false if displaying single phone
    */
-  function hideHomepage() {
+  function hideHomepage(addingPhone) {
     id("income").classList.add("hidden");
     id("phones").classList.add("hidden");
     id("all-phones").classList.add("hidden");
@@ -398,6 +430,11 @@
     id("update-btn").classList.remove("hidden");
     id("add-phone").classList.add("hidden");
     id("err-text").classList.add("hidden");
+    if (addingPhone) {
+      id("single-phone").classList.add("hidden");
+      id("update-btn").classList.add("hidden");
+      id("add-area").classList.remove("hidden");
+    }
   }
 
   /**
