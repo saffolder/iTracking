@@ -174,7 +174,9 @@ async function getPartsCost(partsList) {
     for (let i = 0; i < partsList.length; i += 2) {
       let query = "SELECT part_cost FROM parts WHERE part_id =?;";
       let partPrice = await database.all(query, [partsList[i].toString()]);
-      total = total + partPrice[0].part_cost;
+      if (partPrice[0] !== undefined) {
+        total = total + partPrice[0].part_cost;
+      }
     }
     database.close();
     return total.toFixed(2).toString();

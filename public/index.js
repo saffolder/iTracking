@@ -52,8 +52,6 @@
     let netLoss = 0.0;
     let netGain = 0.0;
     let partsList = [];
-    console.log(phoneData);
-
     for (let i = 0; i < phoneData.length; i++) {
       addParts(partsList, phoneData[i].parts_purchased);
       let phone = gen("div");
@@ -125,7 +123,6 @@
   function displayParts(partsList) {
     clearParts();
     let list = id("parts-list");
-    console.log(partsList);
     for (let i = 0; i < partsList.length; i += 2) {
       let part = gen("li");
       part.attr = partsList[i].part.part_id;
@@ -139,8 +136,6 @@
    */
   function clearParts() {
     let parts = qsa("#parts-list > *");
-    console.log(parts);
-
     for (let i = 0; i < parts.length; i++) {
       parts[i].remove();
     }
@@ -159,11 +154,9 @@
       values.push(id("issue-update").value);
     }
     let newParts = qsa(".part-selector.selected");
-    console.log(newParts);
-
     if (newParts.length > 0) {
       updates.push("parts_purchased =?");
-      values.push(allPartsOrdered(newParts).toString());
+      values.push("[" + allPartsOrdered(newParts).toString() + "]");
     }
     if (id("sell-price").value !== "") {
       updates.push("sold =?");
@@ -198,6 +191,7 @@
    * @param {string} message - Update success or failure message
    */
   function alertUpdate(message) {
+    // TODO: implement an update notification system
     console.log(message);
   }
 
@@ -209,17 +203,12 @@
   function allPartsOrdered(newParts) {
     let parts = id("parts-list").children;
     let allParts = [];
-    console.log(parts);
-
     for (let i = 0; i < parts.length; i++) {
       allParts.push(parseInt(parts[i].attr));
     }
-    console.log(newParts);
-
     for (let i = 0; i < newParts.length; i++) {
       allParts.push(newParts[i].attr);
     }
-    console.log(allParts.toString());
     return allParts;
   }
 
@@ -289,17 +278,13 @@
   function addParts(partsList, partsPurchased) {
     if (partsPurchased !== null) {
       let parts = [];
-      console.log(partsPurchased);
-
       if (partsPurchased.length > 3) {
         parts = partsPurchased.substring(1, partsPurchased.length - 1).split(",");
       } else {
-        parts = partsPurchased.substring(1, 2);
+        parts.push(partsPurchased.substring(1, 2));
       }
-      console.log(parts);
-
       for (let i = 0; i < parts.length; i++) {
-        if (!isNaN(parts[i])) {
+        if (!isNaN(parseInt(parts[i]))) {
           partsList.push(parts[i]);
         }
       }
@@ -333,8 +318,6 @@
    */
   function displayPartOptions(partsList) {
     let selection = id("parts");
-    console.log(partsList);
-
     for (let i = 0; i < partsList.length; i++) {
       let part = gen("div");
       part.classList.add("part-selector");
@@ -367,8 +350,6 @@
   function clearUpdatePage() {
     id("issue-update").value = "";
     let parts = qsa(".part-selector");
-    console.log(parts);
-
     for (let i = 0; i < parts.length; i++) {
       parts[i].remove();
     }
@@ -380,8 +361,6 @@
    */
   function clearHomepage() {
     let phones = qsa("div.phone-card");
-    console.log(phones);
-
     for (let i = 0; i < phones.length; i++) {
       phones[i].remove();
     }
