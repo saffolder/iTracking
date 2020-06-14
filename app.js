@@ -21,17 +21,66 @@ app.use(multer().none());
 /**
  * Endpoint that returns json with the phone id and a success or failure message
  */
-app.post("/addPhone", function(req, res) {
+app.post("/addPhone", async function(req, res) {
   try {
-    console.log(req.body.model-select);
-    //let content = await addPhone(req.body.model);
+    let body = req.body;
+    let content = await addPhone(body.model, body.color, body.cost, body.date);
     res.type("text");
-    res.send("content");
+    res.send(content);
   } catch (error) {
     res.type("text");
     res.send(error);
   }
-})
+});
+
+/**
+ * Adds the attributes of the phone to the database and returns json
+ * @param {int} model - Int corresponding to the model
+ * @param {string} color - Color of the phone
+ * @param {float} cost - How much the phone cost to buy
+ * @param {DATETIME} date - The date I got the phone
+ * @return {json} - The phone id and if the addition was successful JSUT TEXT RN
+ */
+async function addPhone(model, color, cost, date) {
+  try {
+    // make sure to build as much as you can w known info on phone
+    /**
+     * INSERT INTO phones(phone_cost, date_aquired, status, issues, model, model_id)
+VALUES (18, '2020-07-14', 0, '', 'iPhone 6 green', 60);
+
+     */
+    let add = "INSERT INTO phones(phone_cost, date_aquired, status, issues, model, model_id) " +
+              "VALUES (?,?,?,?,?,?);";
+    let database = await getDBConnection();
+
+    // Hopefully it returns the primary key maybe??
+    let result = await database.all(add, [parseFloat(cost), date, 0, '',
+                                    getModel(model) + ' ' + color, parseInt(model)]);
+    console.log(result);
+    await database.close();
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Gets the name of the model of the phone
+ * @param {int} modelId - The model id of the given phone to add to database
+ * @return {string} - The name of the phone model
+ */
+function getModel(modelId) {
+  let models = new Map();
+  models.set(60, "iPhone 6");
+  models.set(61, "iPhone 6+");
+  models.set(62, "iPhone 6S");
+  models.set(63, "iPhone 6S+");
+  models.set(70, "iPhone 7");
+  models.set(71, "iPhone 7+");
+  models.set(80, "iPhone 8");
+  models.set(81, "iPhone 8+");
+  return models.get(modelId);
+}
 
 /**
  * Endpoint that returns a succes or fail to update message
@@ -60,7 +109,7 @@ async function updatePhone(phoneId, updates, values) {
       let query = "UPDATE phones SET " + updates[i] + " WHERE phone_id=?;";
       await database.all(query, [values[i], phoneId]);
     }
-    database.close();
+    await database.close();
     return "Successfully Updates!";
   } catch (error) {
     return "Failed to update, try again later";
@@ -89,7 +138,7 @@ async function getModelParts(model) {
     let query = "SELECT part_id, part_name FROM parts WHERE model_id =?";
     let database = await getDBConnection();
     let content = await database.all(query, [model]);
-    database.close();
+    await database.close();
     return content;
   } catch (error) {
     console.error(error);
@@ -126,7 +175,7 @@ async function getPartNames(partsList) {
       let partName = part[0];
       parts.push({"part": {"part_id": test1, "part_name": partName}});
     }
-    database.close();
+    await database.close();
     return parts;
   } catch (error) {
     console.error(error);
@@ -156,7 +205,7 @@ async function getPhoneInfo(phoneId) {
     let query = "SELECT * FROM phones WHERE phone_id =?;";
     let database = await getDBConnection();
     let content = await database.all(query, [phoneId]);
-    database.close();
+    await database.close();
     return content;
   } catch (error) {
     console.error(error);
@@ -193,7 +242,7 @@ async function getPartsCost(partsList) {
         total = total + partPrice[0].part_cost;
       }
     }
-    database.close();
+    await database.close();
     return total.toFixed(2).toString();
   } catch (error) {
     console.error(error);
@@ -223,7 +272,7 @@ async function getAllPhones(order) {
     let query = "SELECT * FROM phones ORDER BY " + order;
     let database = await getDBConnection();
     let content = await database.all(query);
-    database.close();
+    await database.close();
     return content;
   } catch (error) {
     console.error(error);

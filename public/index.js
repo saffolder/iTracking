@@ -38,7 +38,7 @@
    * When a new phone form has been submitted, fetches the update
    */
   function addPhoneToSystem() {
-    let data = id("add-form");
+    let data = new FormData(id("add-form"));
     fetch("/addPhone", {method: "POST", body: data})
       .then(checkStatus)
       .then(response => response.text())

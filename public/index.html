@@ -103,7 +103,7 @@
       <section id="add-area" class="hidden forms">
         <form id="add-form">
           <h2>Model:</h2>
-          <select name="model-select" id="model-select" required>
+          <select name="model" id="model-select" required>
             <option value="60">iPhone 6</option>
             <option value="61">iPhone 6+</option>
             <option value="62">iPhone 6S</option>
@@ -114,9 +114,9 @@
             <option value="81">iPhone 8+</option>
           </select>
           <h2>Color</h2>
-          <input type="text" id="color-input" pattern="[a-z ]+" required>
+          <input type="text" name="color" id="color-input" pattern="[a-z ]+" required>
           <h2>Cost</h2>
-          <input type="text" id="cost-input" title="Numbers only. Decimal format optional" pattern="[+]?([0-9]*\.[0-9]+|[0-9]+)" required>
+          <input type="text" name="cost" id="cost-input" title="Numbers only. Decimal format optional" pattern="[+]?([0-9]*\.[0-9]+|[0-9]+)" required>
           <h2>Date Aquired</h2>
           <input type="date" name="date" id="date-input" required autocomplete="bday" 2020-06-09">
           <button id="info-btn">Add</button>
