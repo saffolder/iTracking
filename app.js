@@ -19,14 +19,45 @@ app.use(express.json());
 app.use(multer().none());
 
 /**
+ * Deletes a phone based on its phone id
+ */
+app.post("/deletePhone", async function(req, res) {
+  try {
+    let content = await deletePhone(req.body.phone_id);
+    res.type("text");
+    res.send(content);
+  } catch (error) {
+    console.error(error);
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Deletes phone at phoneId from the database
+ * @param {int} phoneId - The id of the phone to delete
+ * @return {string} - A success or failure message
+ */
+async function deletePhone(phoneId) {
+  try {
+    let query = "DELETE FROM phones WHERE phone_id =?;";
+    let database = await getDBConnection();
+    await database.all(query, [phoneId]);
+    await database.close();
+    return "Phone deleted successfully";
+  } catch (error) {
+    return "Failure to delete phone, error: " + error;
+  }
+}
+
+/**
  * Endpoint that returns json with the phone id and a success or failure message
  */
 app.post("/addPhone", async function(req, res) {
   try {
     let body = req.body;
     let content = await addPhone(body.model, body.color, body.cost, body.date);
-    res.type("text");
-    res.send(content);
+    res.json(content);
   } catch (error) {
     res.type("text");
     res.send(error);
@@ -43,22 +74,19 @@ app.post("/addPhone", async function(req, res) {
  */
 async function addPhone(model, color, cost, date) {
   try {
-    // make sure to build as much as you can w known info on phone
-    /**
-     * INSERT INTO phones(phone_cost, date_aquired, status, issues, model, model_id)
-VALUES (18, '2020-07-14', 0, '', 'iPhone 6 green', 60);
-
-     */
     let add = "INSERT INTO phones(phone_cost, date_aquired, status, issues, model, model_id) " +
               "VALUES (?,?,?,?,?,?);";
     let database = await getDBConnection();
-
-    // Hopefully it returns the primary key maybe??
-    let result = await database.all(add, [parseFloat(cost), date, 0, '',
-                                    getModel(model) + ' ' + color, parseInt(model)]);
-    console.log(result);
+    await database.all(add, [parseFloat(cost), date, 0, '',
+                        getModel(parseInt(model)) + ' ' + color, parseInt(model)]);
+    let query = "SELECT phone_id FROM phones ORDER BY _rowid_ DESC LIMIT 1;";
+    let content = await database.all(query);
     await database.close();
-    return result;
+    let message = "Failure to add phone";
+    if (content !== null) {
+      message = "Phone added successfully";
+    }
+    return {"phone_id": content[0].phone_id, "message": message};
   } catch (error) {
     console.error(error);
   }

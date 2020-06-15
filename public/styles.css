@@ -303,6 +303,37 @@ footer > p {
   font-size: 15pt;
 }
 
+#message-center {
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  height: 100%;
+  position: fixed;
+  text-align: center;
+  top: 0;
+  width: 100%;
+  z-index: 10000;
+}
+
+#helper {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+#helper > div {
+  background-color: #fff;
+  box-shadow: 10px 10px 10px #555;
+  display: inline-block;
+  height: auto;
+  max-width: 551px;
+  min-height: 100px;
+  vertical-align: middle;
+  width: 60%;
+  position: relative;
+  border-radius: 8px;
+  padding: 15px 5%;
+}
+
 .hidden, #phones.hidden, #single-phone.hidden, #all-phones.hidden, .forms.hidden {
   display: none;
 }

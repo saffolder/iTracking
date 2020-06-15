@@ -21,7 +21,7 @@
     id("order-btn").addEventListener("click", setHomepage);
     id("home-btn").addEventListener("click", setHomepage);
     id("update-btn").addEventListener("click", updatePhone);
-    id("submit-btn").addEventListener("submit", (event) => {
+    id("submit-btn").addEventListener("click", (event) => {
       event.preventDefault();
       updateDatabase();
     });
@@ -32,6 +32,24 @@
       event.preventDefault();
       addPhoneToSystem();
     });
+    id("delete-btn").addEventListener("click", deletePhone);
+  }
+
+  /**
+   * Deletes this phone from the database.
+   */
+  function deletePhone() {
+    let phoneId = id("single-phone").attr;
+    let params = new FormData();
+    params.append("phone_id", phoneId);
+    fetch("/deletePhone", {method: "POST", body: params})
+      .then(checkStatus)
+      .then(response => response.text())
+      .then((message) => {
+        setHomepage();
+        alertUpdate(message);
+      })
+      .catch(handleError);
   }
 
   /**
@@ -41,7 +59,7 @@
     let data = new FormData(id("add-form"));
     fetch("/addPhone", {method: "POST", body: data})
       .then(checkStatus)
-      .then(response => response.text())
+      .then(response => response.json())
       .then(displayPhone)
       .catch(handleError);
   }
@@ -51,9 +69,10 @@
    * @param {json} content - phone id and message about success or failure to update
    */
   function displayPhone(content) {
-    alertUpdate(content);
+    alertUpdate(content.message);
     hideMe(id("add-area"));
-    //getPhoneData(content.phone_id);
+    id("single-phone").attr = content.phone_id;
+    getPhoneData(content.phone_id);
   }
 
   /**
@@ -220,8 +239,12 @@
    * @param {string} message - Update success or failure message
    */
   function alertUpdate(message) {
-    // TODO: implement an update notification system, use this after add a phone as well
-    console.log(message);
+    setTimeout(() => {
+      id("message-center").classList.remove("hidden");
+      id("message").textContent = message;
+    }, 2000); // might need to make 1750
+    id("message-center").classList.add("hidden");
+    //console.log(message);
   }
 
   /**
@@ -290,7 +313,7 @@
     let netPrice = netGain - (netLoss + parts);
     if (netPrice >= 0) {
       element.textContent = "$" + netPrice.toFixed(2);
-      element.remove("debt");
+      element.classList.remove("debt");
       element.classList.add("gain");
     } else {
       element.textContent = "$" + Math.abs(netPrice.toFixed(2));
