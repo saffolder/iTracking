@@ -243,7 +243,7 @@ form, .phone-card {
   color: red;
 }
 
-.gain {
+.gain, #message {
   color: green;
 }
 
@@ -317,7 +317,6 @@ footer > p {
 }
 
 #message {
-  color: green;
   font-size: 30pt;
 }
 
