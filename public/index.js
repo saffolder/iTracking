@@ -69,9 +69,10 @@
    * @param {json} content - phone id and message about success or failure to update
    */
   function displayPhone(content) {
+    id("single-phone").attr = content.phone_id;
+    // alertUpdate(content.message, id("add-area"), true);
     alertUpdate(content.message);
     hideMe(id("add-area"));
-    id("single-phone").attr = content.phone_id;
     getPhoneData(content.phone_id);
   }
 
@@ -227,6 +228,7 @@
       .then(checkStatus)
       .then(response => response.text())
       .then((message) => {
+        // alertUpdate(message, id("update-area"), true);
         alertUpdate(message);
         hideMe(id("update-area"));
         getPhoneData(id("single-phone").attr);
@@ -234,17 +236,44 @@
       .catch(handleError);
   }
 
+
   /**
    * Alerts the user of message
    * @param {string} message - Update success or failure message
+   * @param {element} element - The element that needs to be hidden for this to run well
+   * @param {boolean} single - If need to display single phone: true, else false
+   */
+  /*function alertUpdate(message, element, single) { // make sure that its the next screen you go to that hides not the one im on
+    if (!single) {
+      id("phones").classList.add("hidden");
+    }
+    element.classList.add("hidden");
+    id("message-center").classList.remove("hidden");
+    id("message").textContent = message;
+    setTimeout(() => {
+      id("message-center").classList.add("hidden");
+      element.classList.remove("hidden");
+      hideMe(element);
+      if (single) {
+        getPhoneData(id("single-phone").attr);
+      } else {
+        id("phones").classList.remove("hidden");
+      }
+    }, 2000); // might need to make 1750
+  } */
+
+  /**
+   * will fix later
+   * @param {string} message - fix later
    */
   function alertUpdate(message) {
+    id("message").textContent = message;
+    id("phones-data").classList.add("hidden");
+    id("message-center").classList.remove("hidden");
     setTimeout(() => {
-      id("message-center").classList.remove("hidden");
-      id("message").textContent = message;
-    }, 2000); // might need to make 1750
-    id("message-center").classList.add("hidden");
-    //console.log(message);
+      id("phones-data").classList.remove("hidden");
+      id("message-center").classList.add("hidden");
+    }, 2000);
   }
 
   /**
