@@ -13,7 +13,7 @@ const sqlite = require("sqlite");
 const LOCAL_HOST = 8000;
 
 const app = express();
-app.use(express.static("public"));
+app.use(express.static("public", {index: "indexTemp.html"}));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());

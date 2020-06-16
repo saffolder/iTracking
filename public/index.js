@@ -17,7 +17,8 @@
    * Initializes the webpage as soon as the DOM has loaded in.
    */
   function init() {
-    setHomepage();
+    window.location.href = "indexTemp.html";
+    /*setHomepage();
     id("order-btn").addEventListener("click", setHomepage);
     id("home-btn").addEventListener("click", setHomepage);
     id("update-btn").addEventListener("click", updatePhone);
@@ -32,7 +33,7 @@
       event.preventDefault();
       addPhoneToSystem();
     });
-    id("delete-btn").addEventListener("click", deletePhone);
+    id("delete-btn").addEventListener("click", deletePhone);*/
   }
 
   /**
@@ -305,6 +306,16 @@
   }
 
   /**
+   * Helper method that gets the status of the phone based on its status code.
+   * @param {int} status - The int represnetation of the status of the phone
+   * @return {string} - String of the status of the phone
+   */
+  function getStatus(status) {
+    let statuses = ["Needs fixed", "Waiting for parts", "Fixing", "Fixed", "Sold", "Can't fix"];
+    return statuses[status];
+  }
+
+  /**
    * Updates the income with how much money I am in the positive or negative
    * @param {double} netGain - How much money made from selling
    * @param {double} netLoss - The cost of phones
@@ -529,16 +540,6 @@
   function setStatus(statusImg, status) {
     statusImg.src = IMG_PATH_STATUS + status + ".png";
     statusImg.classList.add("status-img");
-  }
-
-  /**
-   * Helper method that gets the status of the phone based on its status code.
-   * @param {int} status - The int represnetation of the status of the phone
-   * @return {string} - String of the status of the phone
-   */
-  function getStatus(status) {
-    let statuses = ["Needs fixed", "Waiting for parts", "Fixing", "Fixed", "Sold", "Can't fix"];
-    return statuses[status];
   }
 
   /**
