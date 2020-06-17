@@ -1,0 +1,21 @@
+/*
+  Developer: Samuel Affolder
+  Date: 06/17/2020
+
+  This styles the account information page of my iTracker website.
+*/
+#info {
+  margin-top: 100px;
+  margin-left: 30%;
+  font-family: 'Roboto', sans-serif;
+  color: rgb(64, 64, 64);
+}
+
+#info > h2 {
+  font-size: 30pt;
+  color: rgb(4, 4, 4);
+}
+
+#phone-stats, #money {
+  margin-left: 50px;
+}

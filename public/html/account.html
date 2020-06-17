@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<!--
+  ***
+  Developer: Samuel Affolder
+  Date: 06/17/2020
+
+  Page that shows a detailed outline of my account based on history of phones
+  and margins made.
+
+  iTracker v2.0
+  ***
+-->
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>iTracker</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/account.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+  <link rel="icon" href="../images/header/icon.png" type="image/png">
+  <script src="../scripts/account.js"></script>
+</head>
+
+<body>
+  <!-- Navigation bar -->
+  <header id="nav-bar">
+    <img src="../images/gifs/logo.gif" alt="Apple Logo" id="logo" class="tab">
+    <h2 class="tab" id="fixing">Fixing</h2>
+    <h2 class="tab" id="waiting">Waiting</h2>
+    <h2 class="tab" id="fixed">Fixed</h2>
+    <h2 class="tab" id="broken">Broken</h2>
+    <h2 class="tab" id="add">+</h2>
+    <h2 class="tab" id="account">Account</h2>
+  </header>
+
+  <main>
+    <section id="info">
+      <h2>Phones:</h2>
+      <section id="phone-stats">
+        <h2>Broken: <span id="broken">0</span></h2>
+        <h2>Needs Fixed: <span id="need-fixed">0</span></h2>
+        <h2>Waiting for Parts: <span id="waiting">0</span></h2>
+        <h2>Fixing: <span id="fixing">0</span></h2>
+        <h2>Fixed: <span id="fixed">0</span></h2>
+        <h2>Sold: <span id="sold">0</span></h2>
+      </section>
+      <h2>Money:</h2>
+      <section id="money">
+        <h2>Cost of Parts: <span id="parts-cost" class="debt">$</span></h2>
+        <h2>Cost of Phones: <span id="phones-cost" class="debt">$</span></h2>
+        <h2>Profit: <span id="profit" class="gain">$</span></h2>
+        <h2>NET: <span id="net">$</span></h2>
+      </section>
+    </section>
+  </main>
+  <footer>
+    <h1>Samuel Affolder 2020</h1>
+    <p>iTracker v2.0.0</p>
+    <p>samaffolder@gmail.com</p>
+  </footer>
+</body>
+</html>

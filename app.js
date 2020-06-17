@@ -19,7 +19,42 @@ app.use(express.json());
 app.use(multer().none());
 
 /**
- * Deletes a phone based on its phone id
+ * Endpoint that gets all the account information
+ */
+app.get("/account", async function(req, res) {
+  try {
+    let content = await getInfo();
+    res.json(content);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Calls to the database for all money and status of phones
+ */
+async function getInfo() {
+  try {
+    let database = await getDBConnection();
+    let stat = [];
+    let money = [];
+    let moneyQuery = "";
+    let statusQuery = "SELECT status FROM phones WHERE status =?;";
+    for (let i = 0; i < 6; i++) {
+      let count = await database.all(statusQuery, [i]);
+      stat.push(count.length);
+    }
+    await database.close();
+    let content = {"status": stat, "money": money};
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Endpoint that deletes a phone based on its phone id
  */
 app.post("/deletePhone", async function(req, res) {
   try {
