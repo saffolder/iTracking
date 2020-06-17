@@ -39,7 +39,7 @@ body {
   cursor: pointer;
 }
 
-#phones.hidden, #single-phone.hidden {
+#phones.hidden, #single-phone.hidden, #update-area.hidden {
   display: none;
 }
 /*
@@ -84,7 +84,7 @@ button:hover {
   font-size: 40pt;
 }
 
-#phone-info > h1, #parts {
+#phone-info > h1, #parts, #parts-list {
   color: rgb(64, 64, 64);
   font-family: 'Roboto', sans-serif;
   font-size: 23pt;

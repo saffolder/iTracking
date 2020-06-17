@@ -228,7 +228,6 @@
       .then(checkStatus)
       .then(response => response.text())
       .then((message) => {
-        // alertUpdate(message, id("update-area"), true);
         alertUpdate(message);
         hideMe(id("update-area"));
         getPhoneData(id("single-phone").attr);

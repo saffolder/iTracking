@@ -17,16 +17,138 @@
    */
   function init() {
     setHomepage();
-    enableButtons(); // makes all of the tabs clickable
+    enableButtons();
     id("update").addEventListener("click", updatePhone);
-    // id("remove").addEventListener("click", removePhone);
+    id("logo").addEventListener("click", () => {
+      window.location.href = "main.html";
+    });
+    id("remove").addEventListener("click", removePhone);
+    id("submit-btn").addEventListener("click", (event) => {
+      event.preventDefault();
+      updateDatabase();
+    });
+  }
+
+  /**
+   * Deletes this phone from the database.
+   */
+  function removePhone() {
+    let phoneId = id("single-phone").attr;
+    let params = new FormData();
+    params.append("phone_id", phoneId);
+    fetch("/deletePhone", {method: "POST", body: params})
+      .then(checkStatus)
+      .then(response => response.text())
+      .then(() => {
+        window.location.href = "main.html";
+      })
+      .catch(handleError);
+  }
+
+  /**
+   * Collects the information from the form
+   */
+  function updateDatabase() {
+    let updates = [];
+    let values = [];
+    updates.push("status =?");
+    values.push(id("status-update").value);
+    if (id("issue-update").value !== "") {
+      updates.push("issues =?");
+      values.push(id("issue-update").value);
+    }
+    let newParts = qsa(".part-selector.selected");
+    if (newParts.length > 0) {
+      updates.push("parts_purchased =?");
+      values.push("[" + allPartsOrdered(newParts).toString() + "]");
+    }
+    if (id("sell-price").value !== "") {
+      updates.push("sold =?");
+      values.push(id("sell-price").value);
+    }
+    makeUpdates(id("single-phone").attr, updates, values);
+  }
+
+  /**
+   * Adds newParts to current list of purchased parts for this phone
+   * @param {element[]} newParts - Array of the selected parts list
+   * @return {int[]} - int array of all the part ids of ordered parts for this phone
+   */
+  function allPartsOrdered(newParts) {
+    let parts = id("parts").children;
+    let allParts = [];
+    for (let i = 0; i < parts.length; i++) {
+      allParts.push(parseInt(parts[i].attr));
+    }
+    for (let i = 0; i < newParts.length; i++) {
+      allParts.push(newParts[i].attr);
+    }
+    return allParts;
+  }
+
+  /**
+   * Makes a fetch to the backend to update database with new information on phone
+   * @param {int} phone - the phone id to update
+   * @param {string[]} updates - The query for the updates
+   * @param {object[]} values - The objects for the update (matching indexes to updates)
+   */
+  function makeUpdates(phone, updates, values) {
+    fetch("/updatePhone", {method: "POST", headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }, body: JSON.stringify({phoneId: phone, update: updates, value: values})})
+      .then(checkStatus)
+      .then(response => response.text())
+      .then(() => {
+        id("update-area").classList.add("hidden");
+        getPhoneData(id("single-phone").attr);
+      })
+      .catch(handleError);
   }
 
   /**
    * Allows the user to update the phone with new information
    */
   function updatePhone() {
-    //
+    id("single-phone").classList.add("hidden");
+    id("update-area").classList.remove("hidden");
+    window.scrollTo(0, 0);
+    showParts();
+  }
+
+  /**
+   * Fetches for the parts for purchase for the selected phone
+   */
+  function showParts() {
+    let query = "?model=" + id("single-phone").attr1;
+    fetch("/allParts" + query)
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(displayPartOptions)
+      .catch(handleError);
+  }
+
+  /**
+   * Populates the DOM with the list of parts for purchase
+   * @param {json} partsList - Array of names of all part names and part id
+   */
+  function displayPartOptions(partsList) {
+    let selection = id("parts");
+    for (let i = 0; i < partsList.length; i++) {
+      let part = gen("div");
+      part.classList.add("part-selector");
+      part.attr = partsList[i].part_id;
+      let box = gen("div");
+      box.classList.add("box");
+      let name = gen("p");
+      name.textContent = partsList[i].part_name;
+      part.appendChild(box);
+      part.appendChild(name);
+      selection.appendChild(part);
+      part.addEventListener("click", () => {
+        part.classList.toggle("selected");
+      });
+    }
   }
 
   /**
@@ -198,7 +320,7 @@
    * @param {json} partsList - json array of the names of parts purchased for the phone
    */
   function displayParts(partsList) {
-    let list = id("parts");
+    let list = id("parts-list");
     for (let i = 0; i < partsList.length; i += 2) {
       let part = gen("li");
       part.attr = partsList[i].part.part_id;
