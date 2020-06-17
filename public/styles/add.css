@@ -1,0 +1,67 @@
+/*
+  Developer: Samuel Affolder
+  Date: 06/17/2020
+
+  Handles the look and feel of the add phone page.
+*/
+#add-area {
+  margin-top: 100px;
+}
+
+#phone-area {
+  text-align: center;
+  left: 30%;
+  position: fixed;
+}
+
+#phone-select {
+  width: 270px;
+  height: 434.4px;
+  vertical-align: center;
+}
+
+#add-form {
+  margin-left: 15px;
+  margin-bottom: 15px;
+  left: 50%;
+  position: absolute;
+}
+
+#cost-input {
+  color: rgb(233, 40, 15);
+}
+
+#add-form > h2 {
+  color: rgb(4, 4, 4);
+  font-family: 'Roboto', sans-serif;
+  font-size: 23pt;
+}
+
+input, select {
+  border: 1px solid rgb(124, 124, 124);
+  border-radius: 6px;
+  font-size: 23pt;
+  font-family: 'Roboto', sans-serif;
+}
+
+#date-input {
+  font-size: 18pt;
+}
+
+#info-btn, input, select {
+  width: 200px;
+  height: 50px;
+}
+
+br {
+  margin: 10px;
+}
+
+#info-btn {
+  margin: 0;
+  margin-top: 15px;
+}
+
+#add-area.hidden, #update-area.hidden {
+  display: none;
+}

@@ -278,7 +278,37 @@ async function getPartsCost(partsList) {
 }
 
 /**
- * Returns json information on all of the phones from the database
+ * Endpoint that gets all the phones based on their status
+ */
+app.get("/phonesByStatus", async function(req, res) {
+  try {
+    let content = await getPhonesByStatus(req.query.status);
+    res.json(content);
+  } catch (error) {
+    res.type("text");
+    res.send(error);
+  }
+});
+
+/**
+ * Gets information on phones with status status
+ * @param {int} status - The status code to request with
+ * @return {json} - Information on all the phones with status status
+ */
+async function getPhonesByStatus(status) {
+  try {
+    let query = "SELECT * FROM phones WHERE status=?";
+    let database = await getDBConnection();
+    let content = await database.all(query, [status]);
+    await database.close();
+    return content;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+/**
+ * Endpoint that gets the information on all of the phones from the database
  */
 app.get("/allPhones", async function(req, res) {
   try {

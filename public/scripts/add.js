@@ -1,9 +1,8 @@
 /**
  * Developer: Samuel Affolder
- * Date: 06/16/2020
+ * Date: 06/17/2020
  *
- * This js manages the main page of the iTracker website, on here all phones
- * in the system are displayed in by newest phone at the top.
+ * This js manages the add phone functionality of the database.
  */
 "use strict";
 (function() {
@@ -16,30 +15,25 @@
    * Initializes the webpage after the DOM loads in
    */
   function init() {
-    setHomepage();
-    enableButtons();
     id("update").addEventListener("click", updatePhone);
     id("remove").addEventListener("click", removePhone);
+    id("info-btn").addEventListener("click", (event) => {
+      event.preventDefault();
+      addPhoneToSystem();
+    });
     id("submit-btn").addEventListener("click", (event) => {
       event.preventDefault();
       updateDatabase();
     });
+    enableButtons();
+    id("model-select").addEventListener("change", changeImage);
   }
 
   /**
-   * Deletes this phone from the database.
+   * Changes the image next to add phone
    */
-  function removePhone() {
-    let phoneId = id("single-phone").attr;
-    let params = new FormData();
-    params.append("phone_id", phoneId);
-    fetch("/deletePhone", {method: "POST", body: params})
-      .then(checkStatus)
-      .then(response => response.text())
-      .then(() => {
-        window.location.href = "main.html";
-      })
-      .catch(handleError);
+  function changeImage() {
+    id("phone-select").src = IMG_PATH_PHONES + this.value + ".jpeg";
   }
 
   /**
@@ -149,73 +143,41 @@
   }
 
   /**
-   * Links the tabs with actions that relate to their names
+   * Deletes this phone from the database.
    */
-  function enableButtons() {
-    id("logo").addEventListener("click", () => {
-      window.location.href = "main.html";
-    });
-    id("fixing").addEventListener("click", () => {
-      window.location.href = "../html/fixing.html";
-    });
-    id("waiting").addEventListener("click", () => {
-      window.location.href = "../html/waiting.html";
-    });
-    id("fixed").addEventListener("click", () => {
-      window.location.href = "../html/fixed.html";
-    });
-    id("broken").addEventListener("click", () => {
-      window.location.href = "../html/broken.html";
-    });
-    id("add").addEventListener("click", () => {
-      window.location.href = "../html/add.html";
-    });
-    id("account").addEventListener("click", () => {
-      window.location.href = "../html/account.html";
-    });
-  }
-
-  /**
-   * Makes a call to the server for the phones
-   */
-  function setHomepage() {
-    fetch("/allPhones?order=0")
+  function removePhone() {
+    let phoneId = id("single-phone").attr;
+    let params = new FormData();
+    params.append("phone_id", phoneId);
+    fetch("/deletePhone", {method: "POST", body: params})
       .then(checkStatus)
-      .then(response => response.json())
-      .then(displayPhones)
+      .then(response => response.text())
+      .then(() => {
+        window.location.href = "main.html";
+      })
       .catch(handleError);
   }
 
   /**
-   * Displays information about phones on the DOM
-   * @param {json} phones - The information of the phones, in order of newest
+   * When a new phone form has been submitted, fetches the update
    */
-  function displayPhones(phones) {
-    let display = id("phones");
-    for (let i = 0; i < phones.length; i++) {
-      let phoneCard = gen("div");
-      phoneCard.classList.add("phone-card");
+  function addPhoneToSystem() {
+    let data = new FormData(id("add-form"));
+    fetch("/addPhone", {method: "POST", body: data})
+      .then(checkStatus)
+      .then(response => response.json())
+      .then(displayPhone)
+      .catch(handleError);
+  }
 
-      let status = gen("div");
-      status.classList.add("status-icon");
-      status.style["background-color"] = getColor(phones[i].status);
-
-      let phone = gen("img");
-      phone.src = IMG_PATH_PHONES + phones[i].model_id + ".jpeg";
-      phone.alt = "iPhone";
-
-      let model = gen("h2");
-      model.textContent = phones[i].model;
-
-      let issues = gen("p");
-      issues.textContent = phones[i].issues;
-
-      appendChildren(phoneCard, status, phone, model, issues);
-      phoneCard.addEventListener("click", () => {
-        getPhoneData(phones[i].phone_id);
-      });
-      display.appendChild(phoneCard);
-    }
+  /**
+   * After adding a phone it default views to that phone screen
+   * @param {json} content - phone id and message about success or failure to update
+   */
+  function displayPhone(content) {
+    id("single-phone").attr = content.phone_id;
+    id("add-area").classList.add("hidden");
+    getPhoneData(content.phone_id);
   }
 
   /**
@@ -239,7 +201,6 @@
   function singlePhone(phone) {
     window.scrollTo(0, 0);
     id("single-phone").classList.remove("hidden");
-    id("phones").classList.add("hidden");
     id("single-phone").attr = phone.phone_id;
     id("single-phone").attr1 = phone.model_id;
     qs("#single-image > img").src = IMG_PATH_PHONES + phone.model_id + ".jpeg";
@@ -372,21 +333,6 @@
   }
 
   /**
-   * Helper method that adds children to container
-   * @param {div} phoneCard - container for phone info
-   * @param {div} status - circle displaying the status of the phone
-   * @param {img} phone - the picure of the phone
-   * @param {h2} model - the model of the phone
-   * @param {p} issues - the issues with the phone
-   */
-  function appendChildren(phoneCard, status, phone, model, issues) {
-    phoneCard.appendChild(status);
-    phoneCard.appendChild(phone);
-    phoneCard.appendChild(model);
-    phoneCard.appendChild(issues);
-  }
-
-  /**
    * Helper method to dynamically get the status of phone for the color
    * @param {int} status - The numerical status 0-5 of the phone
    * @return {string} - The color to change the status to
@@ -395,6 +341,33 @@
     let statuses = ["rgb(244,54,34)", "rgb(253,247,36)", "rgb(36,70,253)", "rgb(96,253,36)",
                     "rgb(245, 10, 167)", "rgb(0,0,0)"];
     return statuses[status];
+  }
+
+  /**
+   * Links the tabs with actions that relate to their names
+   */
+  function enableButtons() {
+    id("logo").addEventListener("click", () => {
+      window.location.href = "../html/main.html";
+    });
+    id("fixing").addEventListener("click", () => {
+      window.location.href = "../html/fixing.html";
+    });
+    id("waiting").addEventListener("click", () => {
+      window.location.href = "../html/waiting.html";
+    });
+    id("fixed").addEventListener("click", () => {
+      window.location.href = "../html/fixed.html";
+    });
+    id("broken").addEventListener("click", () => {
+      window.location.href = "../html/broken.html";
+    });
+    id("add").addEventListener("click", () => {
+      window.location.href = "../html/add.html";
+    });
+    id("account").addEventListener("click", () => {
+      window.location.href = "../html/account.html";
+    });
   }
 
   /**

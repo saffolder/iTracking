@@ -1,9 +1,8 @@
 /**
  * Developer: Samuel Affolder
- * Date: 06/16/2020
+ * Date: 06/17/2020
  *
- * This js manages the main page of the iTracker website, on here all phones
- * in the system are displayed in by newest phone at the top.
+ * This handels all of the functionality for the html pages based on their status
  */
 "use strict";
 (function() {
@@ -13,10 +12,10 @@
   window.addEventListener("load", init);
 
   /**
-   * Initializes the webpage after the DOM loads in
+   * Initializes the page once the DOM loads in
    */
   function init() {
-    setHomepage();
+    setHomepage(qs("body").classList);
     enableButtons();
     id("update").addEventListener("click", updatePhone);
     id("remove").addEventListener("click", removePhone);
@@ -176,10 +175,11 @@
   }
 
   /**
-   * Makes a call to the server for the phones
+   * Sets the homepage based on the status of the page
+   * @param {int} pageType - what type of status
    */
-  function setHomepage() {
-    fetch("/allPhones?order=0")
+  function setHomepage(pageType) {
+    fetch("/phonesByStatus?status=" + pageType)
       .then(checkStatus)
       .then(response => response.json())
       .then(displayPhones)
