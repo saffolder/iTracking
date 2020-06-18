@@ -33,16 +33,16 @@
    * @param {json} stats - All the information about the phones
    */
   function showStats(stats) {
-    id("broken").textContent = stats.status.broken;
-    id("need-fixed").textContent = stats.status.need;
-    id("waiting").textContent = stats.status.waiting;
-    id("fixing").textContent = stats.status.fixing;
-    id("fixed").textContent = stats.status.fixed;
-    id("sold").textContent = stats.status.sold;
-    id("parts-cost").textContent = "$" + stats.money.parts;
-    id("phones-cost").textContent = "$" + stats.money.phones;
-    id("profit").textContent = "$" + stats.money.profit;
-    let net = stats.money.profit - (stats.money.parts + stats.money.phones);
+    id("broken-text").textContent = stats.status[5];
+    id("need-fixed").textContent = stats.status[0];
+    id("waiting-text").textContent = stats.status[1];
+    id("fixing-text").textContent = stats.status[2];
+    id("fixed-text").textContent = stats.status[3];
+    id("sold-text").textContent = stats.status[4];
+    id("parts-cost").textContent = "$" + stats.money[0];
+    id("phones-cost").textContent = "$" + stats.money[1];
+    id("profit").textContent = "$" + stats.money[2];
+    let net = stats.money[2] - (stats.money[0] + stats.money[1]);
     if (net > 0) {
       id("net").textContent = net;
       id("net").classList.add("gain");
@@ -106,33 +106,6 @@
    */
   function id(idName) {
     return document.getElementById(idName);
-  }
-
-  /**
-   * Returns an element that matches the selector
-   * @param {string} selector - The specific path to take to get the element
-   * @return {element} - The element, null if no match
-   */
-  function qs(selector) {
-    return document.querySelector(selector);
-  }
-
-  /**
-   * Returns a list of elements that match the selector
-   * @param {string} selector - The specific path to take to get the elements
-   * @return {list}- The list of elements, if no matches returns null
-   */
-  function qsa(selector) {
-    return document.querySelectorAll(selector);
-  }
-
-  /**
-   * Returns a newly made Element node
-   * @param {string} elType - A specific element type
-   * @return {element} - The element node
-   */
-  function gen(elType) {
-    return document.createElement(elType);
   }
 
 })();

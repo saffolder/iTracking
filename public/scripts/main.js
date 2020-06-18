@@ -239,6 +239,7 @@
   function singlePhone(phone) {
     window.scrollTo(0, 0);
     id("single-phone").classList.remove("hidden");
+    qs("footer").classList.add("hidden");
     id("phones").classList.add("hidden");
     id("single-phone").attr = phone.phone_id;
     id("single-phone").attr1 = phone.model_id;

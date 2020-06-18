@@ -54,7 +54,7 @@ footer > * {
   margin: 0;
 }
 
-#phones.hidden, #single-phone.hidden, #update-area.hidden {
+#phones.hidden, #single-phone.hidden, #update-area.hidden, footer.hidden {
   display: none;
 }
 /*
