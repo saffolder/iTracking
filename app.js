@@ -39,15 +39,32 @@ async function getInfo() {
     let database = await getDBConnection();
     let stat = [];
     let money = [];
-    let moneyQuery = "";
-    let statusQuery = "SELECT status FROM phones WHERE status =?;";
     for (let i = 0; i < 6; i++) {
-      let count = await database.all(statusQuery, [i]);
+      let count = await database.all("SELECT status FROM phones WHERE status =?;", [i]);
       stat.push(count.length);
     }
+    let parts = await database.all("SELECT parts_purchased FROM phones;");
+    console.log(parts);
+    let phones = await database.all("SELECT phone_cost FROM phones;");
+    let sold = await database.all("SELECT sold FROM phones;");
+    let partsTotal = 0.0;
+    let phonesTotal = 0.0;
+    let soldTotal = 0.0;
+    for (let i = 0; i < parts.length; i++) {
+      let sum = await getPartsCost(parts[i].parts_purchased.substring(1, parts[i].parts_purchased.length - 1).split(","));
+      console.log(sum);
+      partsTotal = partsTotal + parseFloat(sum);
+      console.log(partsTotal);
+      phonesTotal = phonesTotal + phones[i].phone_cost;
+      soldTotal = soldTotal + sold[i].sold;
+    }
+    money.push(partsTotal);
+    money.push(phonesTotal);
+    money.push(soldTotal);
     await database.close();
     let content = {"status": stat, "money": money};
-
+    console.log(content);
+    //return content;
   } catch (error) {
     console.error(error);
   }
@@ -298,9 +315,11 @@ async function getPartsCost(partsList) {
   try {
     let database = await getDBConnection();
     let total = 0.00;
-    for (let i = 0; i < partsList.length; i += 2) {
+    for (let i = 0; i < partsList.length; i++) {
       let query = "SELECT part_cost FROM parts WHERE part_id =?;";
       let partPrice = await database.all(query, [partsList[i].toString()]);
+      console.log(partsList[i].toString());
+      console.log(partPrice);
       if (partPrice[0] !== undefined) {
         total = total + partPrice[0].part_cost;
       }
