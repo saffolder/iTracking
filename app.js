@@ -13,7 +13,7 @@ const sqlite = require("sqlite");
 const LOCAL_HOST = 8000;
 
 const app = express();
-app.use(express.static("public", {index: "indexTemp.html"}));
+app.use(express.static("public"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
@@ -226,7 +226,7 @@ async function getModelParts(model) {
  */
 app.post("/phoneParts", async function(req, res) {
   try {
-    let content = await getPartNames(req.body.parts);
+    let content = await getPartNames(req.body.parts.split(","));
     res.json(content);
   } catch (error) {
     res.type("text");
@@ -292,7 +292,7 @@ async function getPhoneInfo(phoneId) {
  */
 app.post("/partsCost", async function(req, res) {
   try {
-    let content = await getPartsCost(req.body.parts);
+    let content = await getPartsCost(req.body.parts.split(","));
     res.type("text");
     res.send(content);
   } catch (error) {

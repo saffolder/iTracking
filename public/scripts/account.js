@@ -39,15 +39,15 @@
     id("fixing-text").textContent = stats.status[2];
     id("fixed-text").textContent = stats.status[3];
     id("sold-text").textContent = stats.status[4];
-    id("parts-cost").textContent = "$" + stats.money[0];
-    id("phones-cost").textContent = "$" + stats.money[1];
-    id("profit").textContent = "$" + stats.money[2];
+    id("parts-cost").textContent = "$" + stats.money[0].toFixed(2);
+    id("phones-cost").textContent = "$" + stats.money[1].toFixed(2);
+    id("profit").textContent = "$" + stats.money[2].toFixed(2);
     let net = stats.money[2] - (stats.money[0] + stats.money[1]);
     if (net > 0) {
       id("net").textContent = net;
       id("net").classList.add("gain");
     } else {
-      id("net").textContent = Math.abs(net);
+      id("net").textContent = "$" + Math.abs(net).toFixed(2);
       id("net").classList.add("debt");
     }
   }

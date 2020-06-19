@@ -283,7 +283,7 @@
   function displayParts(partsList) {
     clearParts();
     let list = id("parts-list");
-    for (let i = 0; i < partsList.length; i += 2) {
+    for (let i = 0; i < partsList.length; i++) {
       let part = gen("li");
       part.attr = partsList[i].part.part_id;
       part.textContent = partsList[i].part.part_name.part_name;

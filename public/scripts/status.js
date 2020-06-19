@@ -291,6 +291,8 @@
    */
   function updateCost(netGain, netLoss, parts, element) {
     let netPrice = netGain - (netLoss + parts);
+    console.log(parts);
+    console.log(netPrice);
     if (netPrice >= 0) {
       element.textContent = "$" + netPrice.toFixed(2);
       element.classList.remove("debt");
@@ -323,7 +325,7 @@
   function displayParts(partsList) {
     clearParts();
     let list = id("parts-list");
-    for (let i = 0; i < partsList.length; i += 2) {
+    for (let i = 0; i < partsList.length; i++) {
       let part = gen("li");
       part.attr = partsList[i].part.part_id;
       part.textContent = partsList[i].part.part_name.part_name;
@@ -408,8 +410,8 @@
 
   /**
    * Makes sure that our request to the api went through and returned what we want
-   * @param {json} response - The json that is requested from Edamam api
-   * @return {json} - The json that is requested from Edamam api Error if bad request
+   * @param {json} response - The json that is requested from api
+   * @return {json} - The json that is requested from api Error if bad request
    */
   function checkStatus(response) {
     if (response.ok) {
