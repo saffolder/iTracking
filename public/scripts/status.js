@@ -291,8 +291,6 @@
    */
   function updateCost(netGain, netLoss, parts, element) {
     let netPrice = netGain - (netLoss + parts);
-    console.log(parts);
-    console.log(netPrice);
     if (netPrice >= 0) {
       element.textContent = "$" + netPrice.toFixed(2);
       element.classList.remove("debt");
