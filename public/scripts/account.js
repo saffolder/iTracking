@@ -44,7 +44,7 @@
     id("profit").textContent = "$" + stats.money[2].toFixed(2);
     let net = stats.money[2] - (stats.money[0] + stats.money[1]);
     if (net > 0) {
-      id("net").textContent = net.toFixed(2);
+      id("net").textContent = "$" + net.toFixed(2);
       id("net").classList.add("gain");
     } else {
       id("net").textContent = "$" + Math.abs(net).toFixed(2);
