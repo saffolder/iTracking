@@ -1,8 +1,10 @@
+#!/usr/bin/node
+
 /**
  * Developer: Samuel Affolder
- * Date: 06/07/2020
+ * Last Updated: 07/15/2023
  *
- * Backend that keeps track of different players and stores game state in a database.
+ * Backend that gets requested phone info from database.
  */
 "use strict";
 
@@ -13,7 +15,7 @@ const sqlite = require("sqlite");
 const LOCAL_HOST = 8000;
 
 const app = express();
-app.use(express.static("public"));
+app.use(express.static("docs"));
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.use(multer().none());
